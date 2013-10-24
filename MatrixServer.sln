@@ -5,6 +5,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MatrixAPI", "MatrixAPI\Matr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MatrixMaster", "MatrixMaster\MatrixMaster.csproj", "{74C1BA67-BB0A-4896-8476-6702C2CD3550}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MMO", "MMO", "{D34FFF11-3AEF-4635-90C4-43A20B50ADE1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MMOController", "MMOController\MMOController.csproj", "{D4E2F142-71F4-423B-A0DA-756CEE8D7444}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,6 +29,17 @@ Global
 		{97058C73-FA1B-4AA8-B1A1-3B842448689F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{97058C73-FA1B-4AA8-B1A1-3B842448689F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{97058C73-FA1B-4AA8-B1A1-3B842448689F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4E2F142-71F4-423B-A0DA-756CEE8D7444}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4E2F142-71F4-423B-A0DA-756CEE8D7444}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4E2F142-71F4-423B-A0DA-756CEE8D7444}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D4E2F142-71F4-423B-A0DA-756CEE8D7444}.Debug|x86.Build.0 = Debug|Any CPU
+		{D4E2F142-71F4-423B-A0DA-756CEE8D7444}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4E2F142-71F4-423B-A0DA-756CEE8D7444}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4E2F142-71F4-423B-A0DA-756CEE8D7444}.Release|x86.ActiveCfg = Release|Any CPU
+		{D4E2F142-71F4-423B-A0DA-756CEE8D7444}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D4E2F142-71F4-423B-A0DA-756CEE8D7444} = {D34FFF11-3AEF-4635-90C4-43A20B50ADE1}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = MatrixMaster\MatrixMaster.csproj

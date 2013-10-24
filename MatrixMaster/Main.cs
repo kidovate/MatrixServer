@@ -9,6 +9,8 @@ namespace MatrixMaster
     {
       Console.WriteLine("Launching Matrix Master server.");
       manager = new NodeManager("CompiledNodes");
+	  manager.Initialize();
+	  manager.LogLoadedModules();
     }
   }
 }

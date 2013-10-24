@@ -47,6 +47,9 @@
     <Compile Include="Data\NodeInfo.cs" />
     <Compile Include="Interfaces\INode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Interfaces\INodeController.cs" />
+    <Compile Include="Interfaces\IControllerPortal.cs" />
+    <Compile Include="Data\HostInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

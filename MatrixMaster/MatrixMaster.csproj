@@ -67,6 +67,13 @@
     <Compile Include="Main.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Nodes\NodeManager.cs" />
+    <Compile Include="Nodes\NodeInstaller.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <ProjectReference Include="..\MatrixAPI\MatrixAPI.csproj">
+      <Project>{97058C73-FA1B-4AA8-B1A1-3B842448689F}</Project>
+      <Name>MatrixAPI</Name>
+    </ProjectReference>
+  </ItemGroup>
 </Project>

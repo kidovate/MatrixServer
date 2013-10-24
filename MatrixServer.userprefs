@@ -1,8 +1,14 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="MatrixMaster/Main.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="MatrixMaster/Nodes/NodeInstaller.cs">
     <Files>
-      <File FileName="MatrixMaster/Main.cs" Line="1" Column="1" />
+      <File FileName="MatrixMaster/Main.cs" Line="10" Column="16" />
+      <File FileName="MatrixMaster/Nodes/NodeManager.cs" Line="22" Column="33" />
+      <File FileName="MatrixAPI/Interfaces/INodeController.cs" Line="3" Column="31" />
+      <File FileName="MatrixAPI/Interfaces/IControllerPortal.cs" Line="42" Column="26" />
+      <File FileName="MatrixAPI/Data/NodeInfo.cs" Line="28" Column="1" />
+      <File FileName="MMOController/Controller.cs" Line="14" Column="23" />
+      <File FileName="MatrixMaster/Nodes/NodeInstaller.cs" Line="18" Column="11" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
