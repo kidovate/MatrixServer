@@ -1,0 +1,5 @@
+c:\users\christian\documents\visual studio 2012\Projects\MatrixServer\MatrixCommon\bin\Debug\MatrixCommon.dll
+c:\users\christian\documents\visual studio 2012\Projects\MatrixServer\MatrixCommon\bin\Debug\MatrixCommon.pdb
+c:\users\christian\documents\visual studio 2012\Projects\MatrixServer\MatrixCommon\obj\Debug\MatrixCommon.csprojResolveAssemblyReference.cache
+c:\users\christian\documents\visual studio 2012\Projects\MatrixServer\MatrixCommon\obj\Debug\MatrixCommon.dll
+c:\users\christian\documents\visual studio 2012\Projects\MatrixServer\MatrixCommon\obj\Debug\MatrixCommon.pdb
