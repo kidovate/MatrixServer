@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Encryption\AES.cs" />
+    <Compile Include="Encryption\StringMD5.cs" />
     <Compile Include="Interfaces\IMatrixPortal.cs" />
     <Compile Include="Data\NodeInfo.cs" />
     <Compile Include="Interfaces\INode.cs" />
