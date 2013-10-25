@@ -30,6 +30,6 @@ namespace MatrixAPI.Interfaces
         /// <typeparam name="T"></typeparam>
         /// <param name="rmi"></param>
         /// <returns></returns>
-        List<NodeInfo> GetNodeList<T>(T rmi); 
+        List<NodeInfo> GetNodeList<T>(T rmi);
     }
 }

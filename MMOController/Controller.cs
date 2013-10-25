@@ -10,6 +10,7 @@ namespace MMOController
 	/// </summary>
 	public class MMOCluster : INodeController
 	{
+
 		IControllerPortal matrixPortal;
 		public MMOCluster ()
 		{

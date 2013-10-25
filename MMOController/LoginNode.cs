@@ -1,5 +1,6 @@
 using System;
 using MatrixAPI.Interfaces;
+using log4net;
 
 namespace MMOController
 {
@@ -8,18 +9,20 @@ namespace MMOController
 	/// </summary>
 	public class LoginNode : INode
 	{
-		
+        private static readonly ILog log = LogManager.GetLogger(typeof(LoginNode));
 		public LoginNode ()
 		{
-			Console.WriteLine ("New login node starting up...");
+			log.Info("New login node created.");
 		}
 		
 		public void Initialize(IMatrixPortal portal){
-			Console.WriteLine ("Initializing login node..");
+			log.Debug("Initializing login node..");
+
+            log.Debug("Login node initialized.");
 		}
 		
 		public void Shutdown(){
-			Console.WriteLine ("Login node shutting down..");
+			log.Info("Login node shutting down..");
 		
 		}
 	}
