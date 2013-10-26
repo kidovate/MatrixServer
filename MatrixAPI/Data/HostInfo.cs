@@ -12,12 +12,6 @@ namespace MatrixAPI.Data
         /// Host ID
         /// </summary>
         [ProtoMember(1)]
-        public int Id;
-
-        /// <summary>
-        /// Host IP
-        /// </summary>
-        [ProtoMember(2)] 
-		public string IPAddress;
+        public byte[] Id;
     }
 }

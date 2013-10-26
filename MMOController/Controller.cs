@@ -2,6 +2,7 @@ using System;
 using MatrixAPI.Interfaces;
 using MatrixAPI;
 using MatrixAPI.Data;
+using log4net;
 
 namespace MMOController
 {
@@ -10,7 +11,7 @@ namespace MMOController
 	/// </summary>
 	public class MMOCluster : INodeController
 	{
-
+        private static readonly ILog log = LogManager.GetLogger(typeof(MMOCluster));
 		IControllerPortal matrixPortal;
 		public MMOCluster ()
 		{
@@ -20,6 +21,7 @@ namespace MMOController
 		public void Initialize (MatrixAPI.Interfaces.IControllerPortal portal)
 		{
 			matrixPortal = portal;
+            log.Info("Node controller initialized.");
 		}
 	
 		public void OnHostAdded (MatrixAPI.Data.HostInfo newHost)

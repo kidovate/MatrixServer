@@ -104,6 +104,26 @@ namespace MatrixAPI.Encryption
             return result;
         }
 
+        /// <summary>
+        /// Encrypt a byte array.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public byte[] Encrypt(byte[] input)
+        {
+            return this.BouncyCastleCrypto(true, input);
+        }
+
+        /// <summary>
+        /// Decrypt a byte array.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public byte[] Decrypt(byte[] input)
+        {
+            return this.BouncyCastleCrypto(false, input);
+        }
+
 
         public string Decrypt(string cipher)
         {

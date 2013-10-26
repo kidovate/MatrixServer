@@ -33,7 +33,7 @@
   <ItemGroup>
     <Reference Include="clrzmq, Version=3.0.0.0, Culture=neutral, PublicKeyToken=ef95cdc29d237b0d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\clrzmq.dll</HintPath>
+      <HintPath>..\packages\clrzmq.3.0.0-rc1\lib\net40\clrzmq.dll</HintPath>
     </Reference>
     <Reference Include="log4net">
       <HintPath>..\lib\log4net.dll</HintPath>
@@ -71,6 +71,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\ControllerPortal.cs" />
+    <Compile Include="Data\Host.cs" />
+    <Compile Include="Data\HostCache.cs" />
+    <Compile Include="Encryption\EncryptionKeyDB.cs" />
+    <Compile Include="Enums\HostStatus.cs" />
+    <Compile Include="Exceptions\InvalidMessageException.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Nodes\NodeManager.cs" />
@@ -86,5 +92,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
 </Project>

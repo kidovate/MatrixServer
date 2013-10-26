@@ -55,6 +55,26 @@ namespace MatrixMaster
                 log.Debug("  --> " + handler.ComponentModel.Implementation.FullName);
             }
         }
+
+        /// <summary>
+        /// Pick a node controller and return it.
+        /// </summary>
+        /// <returns></returns>
+        public INodeController InstantiateNodeController()
+        {
+            var handlers = container.Kernel.GetHandlers(typeof (INodeController));
+            if (handlers.Length == 0)
+                return null;
+            //Create an instance
+            var instance = container.Resolve<INodeController>();
+            log.Debug("Instantiated NodeController: "+instance.GetType().FullName);
+            return instance;
+        }
+
+        public void Shutdown()
+        {
+            //Shutdown all instances
+        }
     }
 }
 
