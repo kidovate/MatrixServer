@@ -28,6 +28,16 @@
         /// <summary>
         /// Confirm encryption and begin operating.
         /// </summary>
-        ConfirmEncryption
+        ConfirmEncryption,
+
+        /// <summary>
+        /// Is the message valid?
+        /// </summary>
+        InvalidIdentity,
+
+        /// <summary>
+        /// Disconnect the host.
+        /// </summary>
+        Disconnect
     }
 }

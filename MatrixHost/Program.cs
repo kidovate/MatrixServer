@@ -1,15 +1,52 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using MatrixAPI.Encryption;
+using MatrixHost.MasterInterface;
+using MatrixHost.Properties;
+using log4net;
 
 namespace MatrixHost
 {
     class Program
     {
-        static void Main(string[] args)
+        private static readonly ILog log = LogManager.GetLogger(typeof(Program));
+
+        private static HostClient client;
+
+        public static void Main(string[] args)
         {
+            log4net.Config.XmlConfigurator.Configure();
+            log.Info("=== Matrix Host Server Launching ===");
+
+            log.Debug("Searching for encryption key "+Settings.Default.KeyFile+"...");
+            if(!File.Exists(Settings.Default.KeyFile))
+            {
+                log.Error("No encryption key! Exiting...");
+                Console.ReadLine();
+                return;
+            }
+
+            byte[] hash;
+            AES encrypt;
+            //Hash the file to a all lowercase string
+            using (var md5 = MD5.Create())
+            {
+                using (var stream = File.OpenRead(Settings.Default.KeyFile))
+                {
+                    hash = md5.ComputeHash(stream);
+                    encrypt = new AES(Encoding.UTF8, Settings.Default.KeyFile);
+                }
+            }
+
+            client = new HostClient(Settings.Default.MasterIP, Settings.Default.MasterPort, encrypt, hash);
+            client.Startup();
+
+            Console.ReadLine();
         }
     }
 }

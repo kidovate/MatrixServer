@@ -55,7 +55,8 @@ namespace MatrixMaster.Data
         /// </param>
         public NodeInfo LaunchNode<T>()
         {
-            throw new NotImplementedException();
+            Console.WriteLine("TEMP = Launch node requested");
+            return null;
         }
 
         /// <summary>

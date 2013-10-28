@@ -55,8 +55,8 @@ namespace MatrixMaster.Data
             if (status == HostStatus.Disconnected)
                 return;
 
-            if(!Enum.IsDefined(typeof(HostInterface), message[0]))
-                throw new InvalidMessageException();
+           // if(!Enum.IsDefined(typeof(HostInterface), message[0]))
+           //     throw new InvalidMessageException();
 
             if(status == HostStatus.Operating && message.Length > 1)
             {

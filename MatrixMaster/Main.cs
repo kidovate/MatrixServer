@@ -1,6 +1,7 @@
 using System;
 using MatrixAPI.Interfaces;
 using MatrixMaster.Encryption;
+using MatrixMaster.Properties;
 using MatrixMaster.Servers;
 using log4net;
 
@@ -24,7 +25,7 @@ namespace MatrixMaster
             manager.LogLoadedModules();
 
             INodeController controller = manager.InstantiateNodeController();
-            hostInterface = new HostInterface(6560, controller);
+            hostInterface = new HostInterface(Settings.Default.Port, controller);
             hostInterface.Startup();
 
             Console.WriteLine("Press any key to quit...");

@@ -1,0 +1,15 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="MatrixHost.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="MasterIP" Type="System.String" Scope="User">
+      <Value Profile="(Default)">127.0.0.1</Value>
+    </Setting>
+    <Setting Name="MasterPort" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">6560</Value>
+    </Setting>
+    <Setting Name="KeyFile" Type="System.String" Scope="User">
+      <Value Profile="(Default)">EncryptionKey.mek</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using ZeroMQ;
 
 namespace MatrixMaster.Data
 {
@@ -46,6 +48,15 @@ namespace MatrixMaster.Data
         public static void RegisterHost(Host host)
         {
             hosts[host.Id] = host;
+        }
+
+        /// <summary>
+        /// Find a host by identity
+        /// </summary>
+        /// <param name="identity"></param>
+        public static Host FindHost(byte[] identity)
+        {
+            return hosts.Keys.Any(a => a.SequenceEqual(identity)) ? hosts.FirstOrDefault(e => e.Key.SequenceEqual(identity)).Value : null;
         }
     }
 }

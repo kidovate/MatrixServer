@@ -26,9 +26,8 @@ namespace MMOController
 	
 		public void OnHostAdded (MatrixAPI.Data.HostInfo newHost)
 		{
-			Console.WriteLine("[Controller] Host added: "+newHost.Id);
 			matrixPortal.LaunchNode<LoginNode>();
-			
+	        log.Info("Launching login node on new host...");
 		}
 		#endregion
 	}

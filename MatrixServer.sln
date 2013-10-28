@@ -13,8 +13,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EncryptionTest", "Encryptio
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5B4332CB-D391-406F-A33F-1CC09C49CF07}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocketTest", "SocketTest\SocketTest.csproj", "{E8A2A54D-D452-4218-866C-2584164BA67C}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MatrixHost", "MatrixHost\MatrixHost.csproj", "{A61FD11B-77CA-4756-8986-0E8DC1117B4B}"
 EndProject
 Global
@@ -71,16 +69,6 @@ Global
 		{08527936-6C75-4FE9-A74E-677D919537A4}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{08527936-6C75-4FE9-A74E-677D919537A4}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{08527936-6C75-4FE9-A74E-677D919537A4}.Release|x86.ActiveCfg = Release|Any CPU
-		{E8A2A54D-D452-4218-866C-2584164BA67C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E8A2A54D-D452-4218-866C-2584164BA67C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E8A2A54D-D452-4218-866C-2584164BA67C}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{E8A2A54D-D452-4218-866C-2584164BA67C}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{E8A2A54D-D452-4218-866C-2584164BA67C}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{E8A2A54D-D452-4218-866C-2584164BA67C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E8A2A54D-D452-4218-866C-2584164BA67C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E8A2A54D-D452-4218-866C-2584164BA67C}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{E8A2A54D-D452-4218-866C-2584164BA67C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{E8A2A54D-D452-4218-866C-2584164BA67C}.Release|x86.ActiveCfg = Release|Any CPU
 		{A61FD11B-77CA-4756-8986-0E8DC1117B4B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A61FD11B-77CA-4756-8986-0E8DC1117B4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A61FD11B-77CA-4756-8986-0E8DC1117B4B}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU

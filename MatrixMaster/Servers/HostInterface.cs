@@ -30,6 +30,7 @@ namespace MatrixMaster.Servers
             this.port = port;
             context = ZmqContext.Create();
             server = context.CreateSocket(SocketType.ROUTER);
+            server.TcpKeepalive = TcpKeepaliveBehaviour.Enable;
             this.controller = controller;
             controller.Initialize(new ControllerPortal());
         }
@@ -78,20 +79,35 @@ namespace MatrixMaster.Servers
                         //Response message
                         var response = new byte[28];
                         response[0] = (byte)MessageIdentifier.SetIdentity;
+                        log.Debug("Assigned new client a 27 byte identity.");
                         //Setup a host object for this.
                         var host = new Host();
                         HostCache.RegisterHost(host);
                         host.Id.CopyTo(response, 1);
                         server.SendMore(identity.Buffer);
                         server.Send(response);
+                    }else
+                    {
+                        log.Debug("Client with 1 byte identity, message "+Enum.GetName(typeof(MessageIdentifier), data.Buffer[0]));
                     }
 
-                }else if(identity.BufferSize == 27)
+                }else if(identity.BufferSize == 0)
                 {
-                    
-                }else
+                    log.Error("Empty identity message discarded.");
+                }
+                else
                 {
-                    log.Error("Client contacted with invalid identity!");
+                    //Find the host object.
+                    var hostIdentity = HostCache.FindHost(identity.Buffer);
+                    if (hostIdentity == null)
+                    {
+                        log.Debug("Client contacted with invalid identity!");
+                        server.SendMore(identity.Buffer);
+                        server.Send(new byte[] {(byte) MessageIdentifier.InvalidIdentity});
+                    }else
+                    {
+                        hostIdentity.ProcessMessage(this, data.Buffer);
+                    }
 
                 }
             }
