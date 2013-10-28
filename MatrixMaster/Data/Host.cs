@@ -67,11 +67,16 @@ namespace MatrixMaster.Data
                 finalMessage[0] = message[0];
                 message = finalMessage;
             }
+			
+			if(status == HostStatus.SyncNodes){
+				//Pass communication to the node manager
+			}
 
             switch((MessageIdentifier)message[0])
             {
                 //Coming from client, this is confirming an identity.
                 case MessageIdentifier.SetIdentity:
+					if(status != HostStatus.NoIdentity){ log.Debug("Host already has registered."); break; }
                     log.Debug("Identity confirmed, beginning encryption sequence.");
                     status = HostStatus.NoEncryption;
                     //Begin encryption exchange
@@ -92,8 +97,8 @@ namespace MatrixMaster.Data
                     }
                     else
                     {
-                        log.Debug("Host accepted, beginning encrypted communications.");
-                        status = HostStatus.Operating;
+                        log.Debug("Host accepted, beginning node sync.");
+                        status = HostStatus.SyncNodes;
                         inter.SendTo(hostInfo, BuildMessage(MessageIdentifier.ConfirmEncryption, null));
                         encryption = encrypt;
                         inter.Controller.OnHostAdded(hostInfo);

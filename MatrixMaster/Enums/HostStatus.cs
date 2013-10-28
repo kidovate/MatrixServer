@@ -24,10 +24,15 @@ namespace MatrixMaster.Enums
         /// Gone, dispose it now.
         /// </summary>
         Disconnected = 3,
-
+		
+		/// <summary>
+		/// Working w/ node manager
+		/// </summary>
+		SyncNodes = 4,
+		
         /// <summary>
         /// Ready to launch nodes.
         /// </summary>
-        Operating = 4
+        Operating = 5
     }
 }
