@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2011
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MatrixAPI", "MatrixAPI\MatrixAPI.csproj", "{97058C73-FA1B-4AA8-B1A1-3B842448689F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MatrixMaster", "MatrixMaster\MatrixMaster.csproj", "{74C1BA67-BB0A-4896-8476-6702C2CD3550}"
