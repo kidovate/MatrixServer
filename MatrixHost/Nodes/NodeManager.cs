@@ -1,9 +1,4 @@
-using System;
 using Castle.Windsor;
-using Castle.Windsor.Installer;
-using Castle.Windsor.Configuration;
-using Castle.MicroKernel.Registration;
-using Castle.Windsor.Proxy;
 using System.IO;
 using System.Reflection;
 using MatrixAPI.Interfaces;

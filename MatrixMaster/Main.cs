@@ -1,6 +1,7 @@
 using System;
 using MatrixAPI.Interfaces;
 using MatrixMaster.Encryption;
+using MatrixMaster.Nodes;
 using MatrixMaster.Properties;
 using MatrixMaster.Servers;
 using log4net;
@@ -13,6 +14,7 @@ namespace MatrixMaster
         private static HostInterface hostInterface;
         private static readonly ILog log = LogManager.GetLogger(typeof (MainClass));
         private static EncryptionKeyDB keyDb;
+        private static NodeHost host;
         public static void Main(string[] args)
         {
             log4net.Config.XmlConfigurator.Configure();
@@ -27,6 +29,8 @@ namespace MatrixMaster
             INodeController controller = manager.InstantiateNodeController();
             hostInterface = new HostInterface(Settings.Default.Port, controller);
             hostInterface.Startup();
+
+            host = new NodeHost();
 
             Console.WriteLine("Press any key to quit...");
             Console.ReadLine();

@@ -42,7 +42,6 @@ namespace MatrixMaster.Encryption
             }
             foreach(var file in files)
             {
-                //Hash the file to a all lowercase string
                 using (var md5 = MD5.Create())
                 {
                     using (var stream = File.OpenRead(file))

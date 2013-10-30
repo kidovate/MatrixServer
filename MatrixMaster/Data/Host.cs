@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Linq;
+using System.Text;
 using MatrixAPI.Data;
 using MatrixAPI.Encryption;
 using MatrixAPI.Enum;
+using MatrixHost.Nodes;
 using MatrixMaster.Encryption;
 using MatrixMaster.Enums;
 using MatrixMaster.Exceptions;
+using MatrixMaster.Nodes;
 using MatrixMaster.Servers;
 using log4net;
 
@@ -67,10 +70,6 @@ namespace MatrixMaster.Data
                 finalMessage[0] = message[0];
                 message = finalMessage;
             }
-			
-			if(status == HostStatus.SyncNodes){
-				//Pass communication to the node manager
-			}
 
             switch((MessageIdentifier)message[0])
             {
@@ -84,6 +83,11 @@ namespace MatrixMaster.Data
                     break;
                 //Coming from client, this is the encryption md5.
                 case MessageIdentifier.BeginEncryption:
+                    if(status != HostStatus.NoEncryption)
+                    {
+                        log.Error("Unexpected BeginEncryption from host.");
+                        break;
+                    }
                     //Get the encryption key MD5.
                     byte[] keymd5 = message.Skip(1).ToArray();
                     log.Debug("Encryption key confirmation request: "+BitConverter.ToString(keymd5).Replace("-","").ToLower());
@@ -104,7 +108,14 @@ namespace MatrixMaster.Data
                         inter.Controller.OnHostAdded(hostInfo);
                     }
                     break;
-                
+                case MessageIdentifier.GetLibraryURL:
+                    //Retreive the library url for the path
+                    string dataString = Encoding.Unicode.GetString(message, 1, message.Length-1);
+                    int reqId = int.Parse(dataString.Split(':')[0]);
+                    string library = dataString.Split(':')[1];
+                    var libraryUrl = Encoding.UTF8.GetBytes(reqId+":"+NodeHost.Instance.GetDownloadUrl(library));
+                    inter.SendTo(hostInfo, BuildMessage(MessageIdentifier.GetLibraryURL, libraryUrl));
+                    break;
             }
         }
 
@@ -122,14 +133,7 @@ namespace MatrixMaster.Data
             else
             {
                 //Encrypt the data if needed
-                byte[] finalData;
-                if(status == HostStatus.Operating)
-                {
-                    finalData = encryption.Encrypt(data);
-                }else
-                {
-                    finalData = data;
-                }
+                byte[] finalData = status > HostStatus.NoEncryption ? encryption.Encrypt(data) : data;
                 combinedMessage = new byte[finalData.Length+1];
                 finalData.CopyTo(combinedMessage, 1);
             }

@@ -26,9 +26,19 @@
         InvalidKey,
 
         /// <summary>
-        /// Confirm encryption and begin operating.
+        /// Confirm encryption and begin node sync sequence.
         /// </summary>
         ConfirmEncryption,
+
+        /// <summary>
+        /// Node synchronization request.
+        /// </summary>
+        NodeSync,
+
+        /// <summary>
+        /// Server says all-ok, nodes are synchronized, begin operation.
+        /// </summary>
+        BeginOperation,
 
         /// <summary>
         /// Is the message valid?
@@ -38,6 +48,11 @@
         /// <summary>
         /// Disconnect the host.
         /// </summary>
-        Disconnect
+        Disconnect,
+
+        /// <summary>
+        /// Request a library URL for downloading.
+        /// </summary>
+        GetLibraryURL
     }
 }

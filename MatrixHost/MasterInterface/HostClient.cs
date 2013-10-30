@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using MatrixAPI.Data;
 using MatrixAPI.Encryption;
 using MatrixAPI.Enum;
+using MatrixHost.Nodes;
+using ProtoBuf;
 using ZeroMQ;
 using log4net;
 
@@ -35,16 +39,21 @@ namespace MatrixHost.MasterInterface
 
         private byte[] keyHash;
 
+        private readonly NodeLibraryManager nodeManager;
+
+        private Dictionary<int, string> receivedNodeURLs = new Dictionary<int, string>(); 
+
         /// <summary>
         /// Create a new host client.
         /// </summary>
         /// <param name="serverIp">Master server IP</param>
         /// <param name="serverPort">Master server port.</param>
-        public HostClient(string serverIp, int serverPort, AES encryption, byte[] keyHash)
+        public HostClient(string serverIp, int serverPort, AES encryption, byte[] keyHash, NodeLibraryManager nodeManager)
         {
             log.Info("Creating a new HostClient.");
             this.encryption = encryption;
             this.keyHash = keyHash;
+            this.nodeManager = nodeManager;
             context = ZmqContext.Create();
             socket = context.CreateSocket(SocketType.DEALER);
             socket.TcpKeepalive = TcpKeepaliveBehaviour.Enable;
@@ -136,11 +145,44 @@ namespace MatrixHost.MasterInterface
             {
                 log.Error("Invalid encryption key. Exiting...");
                 status = 0;
-                socket.Send(new byte[] { (byte)MessageIdentifier.Disconnect });
+                socket.Send(BuildMessage(MessageIdentifier.Disconnect, null, false));
                 return;
             }
 
-            log.Info("Connected, encrypted, and ready to launch nodes.");
+            log.Info("Connected, encrypted, beginning node synchronization.");
+
+            bool librariesSynced = false;
+            do
+            {
+                nodeManager.IndexLibraries();
+                
+                //Serialize for upload
+                var libraryIndex = nodeManager.FileIndex;
+                byte[] serializedIndex;
+                using (var ms = new MemoryStream())
+                {
+                    Serializer.Serialize(ms, libraryIndex);
+                    serializedIndex = ms.ToArray();
+                }
+
+                //Build message
+                socket.Send(BuildMessage(MessageIdentifier.NodeSync, serializedIndex, true));
+
+                //Wait for response
+                var resp = socket.ReceiveMessage();
+                
+                if(resp.First.Buffer[0] == (byte)MessageIdentifier.NodeSync)
+                {
+                    //Perform some synchronization job
+                    nodeManager.PerformSyncJob(
+                        Serializer.Deserialize<SyncJob>(new MemoryStream(resp.First.Buffer.Skip(1).ToArray())));
+                }else
+                {
+                    librariesSynced = true;
+                }
+
+            } while (!librariesSynced);
+
 
             while(status == 1)
             {
@@ -153,6 +195,42 @@ namespace MatrixHost.MasterInterface
         private void LogUnexpectedMessage(byte[] buffer)
         {
             log.Error("Unexpected message: "+Enum.GetName(typeof(MessageIdentifier), buffer[0]));
+        }
+
+        /// <summary>
+        /// Build a message based on an identifier and a data array.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public byte[] BuildMessage(MessageIdentifier message, byte[] data, bool encryp)
+        {
+            byte[] combinedMessage;
+            if (data == null)
+                combinedMessage = new byte[1];
+            else
+            {
+                //Encrypt the data if needed
+                byte[] finalData = encryp ? encryption.Encrypt(data) : data;
+                combinedMessage = new byte[finalData.Length + 1];
+                finalData.CopyTo(combinedMessage, 1);
+            }
+            combinedMessage[0] = (byte)message;
+            return combinedMessage;
+        }
+        
+        /// <summary>
+        /// Send the request for the URL to the library for downloading.
+        /// </summary>
+        /// <param name="nodeLibDownloader"></param>
+        public string RequestLibraryURL(string library, int reqId, NodeLibDownloader nodeLibDownloader)
+        {
+            socket.Send(BuildMessage(MessageIdentifier.GetLibraryURL, Encoding.Unicode.GetBytes(reqId+":"+library), true));
+            var message = socket.ReceiveMessage();
+            //todo: check if it actually is a url, this is really hacky for now
+            var data = Encoding.UTF8.GetString(message.First.Buffer.Skip(1).ToArray());
+            var url = data.Split(':')[1];
+            return url;
         }
     }
 }
