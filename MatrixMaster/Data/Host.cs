@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Timers;
 using MatrixAPI.Data;
 using MatrixAPI.Encryption;
 using MatrixAPI.Enum;
@@ -24,6 +25,8 @@ namespace MatrixMaster.Data
         private HostStatus status;
         private AES encryption;
         private static readonly ILog log = LogManager.GetLogger(typeof(Host));
+        Timer heartbeat = new Timer(30000);
+        private HostInterface lastInter;
         /// <summary>
         /// Returns the identifier, a 27 byte array.
         /// </summary>
@@ -47,6 +50,12 @@ namespace MatrixMaster.Data
         {
             hostInfo = new HostInfo() {Id = HostCache.RandomId()};
             status = HostStatus.NoIdentity;
+            heartbeat.Elapsed += (sender, args) =>
+                                     {
+                                         log.Info("Host timed out, terminating");
+                                         status = HostStatus.Disconnected;
+                                         lastInter.DisconnectHost(hostInfo);
+                                     };
         }
 
         /// <summary>
@@ -56,6 +65,7 @@ namespace MatrixMaster.Data
         /// <param name="message">Received message.</param>
         public void ProcessMessage(HostInterface inter, byte[] message)
         {
+            lastInter = inter;
             if (status == HostStatus.Disconnected)
                 return;
 
@@ -115,8 +125,7 @@ namespace MatrixMaster.Data
                     if(syncJob == null)
                     {
                         inter.SendTo(hostInfo, BuildMessage(MessageIdentifier.BeginOperation, null));
-                        inter.Controller.OnHostAdded(hostInfo);
-                        status = HostStatus.Operating;
+                        status = HostStatus.LoadingNodes;
                     }else
                     {
                         byte[] serializedJob;
@@ -136,6 +145,14 @@ namespace MatrixMaster.Data
                     string library = dataString.Split(':')[1];
                     var libraryUrl = Encoding.UTF8.GetBytes(reqId+":"+NodeHost.Instance.GetDownloadUrl(library));
                     inter.SendTo(hostInfo, BuildMessage(MessageIdentifier.GetLibraryURL, libraryUrl));
+                    break;
+                case MessageIdentifier.BeginOperation:
+                    if(status == HostStatus.LoadingNodes)
+                    {
+                        status = HostStatus.Operating;
+                        log.Info("New host ready for operation.");
+                        inter.Controller.OnHostAdded(hostInfo);
+                    }
                     break;
             }
         }

@@ -139,6 +139,7 @@ namespace MatrixMaster.Servers
         public void DisconnectHost(HostInfo hostInfo)
         {
             HostCache.ConnectedHosts.Remove(hostInfo.Id);
+            //todo: node cache, remove the associated nodes
         }
     }
 }

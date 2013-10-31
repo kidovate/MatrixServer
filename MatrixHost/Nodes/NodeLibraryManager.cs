@@ -5,6 +5,7 @@ using System.Net;
 using System.Security.Cryptography;
 using MatrixAPI.Data;
 using MatrixHost.MasterInterface;
+using MatrixHost.Properties;
 using log4net;
 
 namespace MatrixHost.Nodes
@@ -63,7 +64,7 @@ namespace MatrixHost.Nodes
 	            //Hash file
                 using (var md5 = MD5.Create())
                 {
-                    using (var stream = File.OpenRead(file))
+                    using (var stream = File.OpenRead(libraryPath+"/"+file))
                     {
                         var hash = md5.ComputeHash(stream);
                         filesystemMap[file] = hash;
@@ -103,8 +104,9 @@ namespace MatrixHost.Nodes
         /// <param name="destFolder"></param>
         public void DownloadFile(string library, string destFolder)
         {
-            log.Debug("Requesting library download URL for " + library + ".");
-            var libUrl = clientInterface.RequestLibraryURL(library, int.MaxValue, this);
+            //log.Debug("Requesting library download URL for " + library + ".");
+            var respose = clientInterface.RequestLibraryURL(library, int.MaxValue, this).Split('|');
+            var libUrl = "http://" + Settings.Default.MasterIP + ":" + respose[0] + "/" + respose[1];
             using (WebClient Client = new WebClient())
             {
                 log.Debug("Downloading from " + libUrl + "...");

@@ -67,7 +67,7 @@
       <HintPath>..\packages\clrzmq.3.0.0-rc1\lib\net40\clrzmq.dll</HintPath>
     </Reference>
     <Reference Include="log4net">
-      <HintPath>..\..\OneWorldServer\OneWorldServer\lib\log4net.dll</HintPath>
+      <HintPath>..\lib\log4net.dll</HintPath>
     </Reference>
     <Reference Include="protobuf-net">
       <HintPath>..\MatrixAPI\bin\Debug\protobuf-net.dll</HintPath>

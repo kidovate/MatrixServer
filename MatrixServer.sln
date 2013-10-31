@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2011
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MatrixAPI", "MatrixAPI\MatrixAPI.csproj", "{97058C73-FA1B-4AA8-B1A1-3B842448689F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MatrixMaster", "MatrixMaster\MatrixMaster.csproj", "{74C1BA67-BB0A-4896-8476-6702C2CD3550}"
@@ -8,8 +8,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MMO", "MMO", "{D34FFF11-3AEF-4635-90C4-43A20B50ADE1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MMOController", "MMOController\MMOController.csproj", "{D4E2F142-71F4-423B-A0DA-756CEE8D7444}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EncryptionTest", "EncryptionTest\EncryptionTest.csproj", "{08527936-6C75-4FE9-A74E-677D919537A4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5B4332CB-D391-406F-A33F-1CC09C49CF07}"
 EndProject
@@ -59,16 +57,6 @@ Global
 		{D4E2F142-71F4-423B-A0DA-756CEE8D7444}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{D4E2F142-71F4-423B-A0DA-756CEE8D7444}.Release|x86.ActiveCfg = Release|Any CPU
 		{D4E2F142-71F4-423B-A0DA-756CEE8D7444}.Release|x86.Build.0 = Release|Any CPU
-		{08527936-6C75-4FE9-A74E-677D919537A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{08527936-6C75-4FE9-A74E-677D919537A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{08527936-6C75-4FE9-A74E-677D919537A4}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{08527936-6C75-4FE9-A74E-677D919537A4}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{08527936-6C75-4FE9-A74E-677D919537A4}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{08527936-6C75-4FE9-A74E-677D919537A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{08527936-6C75-4FE9-A74E-677D919537A4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{08527936-6C75-4FE9-A74E-677D919537A4}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{08527936-6C75-4FE9-A74E-677D919537A4}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{08527936-6C75-4FE9-A74E-677D919537A4}.Release|x86.ActiveCfg = Release|Any CPU
 		{A61FD11B-77CA-4756-8986-0E8DC1117B4B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A61FD11B-77CA-4756-8986-0E8DC1117B4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A61FD11B-77CA-4756-8986-0E8DC1117B4B}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU

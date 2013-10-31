@@ -29,6 +29,11 @@ namespace MatrixMaster.Enums
 		/// Working w/ node manager
 		/// </summary>
 		SyncNodes = 4,
+
+        /// <summary>
+        /// Waiting for ready message
+        /// </summary>
+        LoadingNodes = 5,
 		
         /// <summary>
         /// Ready to launch nodes.

@@ -51,7 +51,6 @@ namespace MatrixHost
             client.Startup();
 
             nodeLibraryManager = new NodeLibraryManager("CompiledNodes", client);
-            manager = new NodeManager("CompiledNodes");
 
             Console.ReadLine();
         }

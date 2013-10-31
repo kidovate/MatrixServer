@@ -181,7 +181,12 @@ namespace MatrixHost.MasterInterface
                 }
 
             } while (!librariesSynced);
+            NodeManager manager = new NodeManager("CompiledNodes");
 
+            manager.Initialize();
+            manager.LogLoadedModules();
+
+            socket.Send(BuildMessage(MessageIdentifier.BeginOperation, null, true));
 
             while(status == 1)
             {

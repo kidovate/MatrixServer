@@ -34,12 +34,17 @@ namespace MatrixMaster
             nodeLibraryManager = new NodeLibraryManager("CompiledNodes");
             nodeLibraryManager.Initialize();
             
-            host = new NodeHost();
+            host = new NodeHost("CompiledNodes");
+            log.Debug("Test download uri: "+host.GetDownloadUrl("MMOController.dll"));
+
+            var webServer = NodeWebServer.Create(Settings.Default.HTTPPort);
+            
 
             Console.WriteLine("Press any key to quit...");
             Console.ReadLine();
 
             Console.WriteLine("Shutting down...");
+            webServer.Stop();
             manager.Shutdown();
             Console.WriteLine("Manager shutdown...");
             hostInterface.Shutdown();

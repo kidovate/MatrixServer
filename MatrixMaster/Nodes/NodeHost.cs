@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using MatrixMaster.Properties;
+using log4net;
 
 namespace MatrixMaster.Nodes
 {
@@ -10,17 +13,19 @@ namespace MatrixMaster.Nodes
     /// </summary>
     public class NodeHost
     {
-        //I guess for now I'll just have one url for one lib for testing.
-        //This needs to be properly implemented later
         public static NodeHost Instance;
-
+        private string libDirectory;
+        private static readonly ILog log = LogManager.GetLogger(typeof(NodeHost));
         /// <summary>
-        /// A host from which hosts can download library files
+        /// Registers the http paths for node downloads and other.
         /// </summary>
-        public NodeHost()
+        public NodeHost(string libDirectory)
         {
             Instance = this;
+            this.libDirectory = libDirectory;
         }
+
+        private Dictionary<string, string> registeredUris = new Dictionary<string, string>(); 
 
         /// <summary>
         /// Get the download URL for the library
@@ -29,7 +34,22 @@ namespace MatrixMaster.Nodes
         /// <returns></returns>
         public string GetDownloadUrl(string library)
         {
-            return "dl.dropboxusercontent.com/u/1330616/Documentation-2013-07-22.zip";
+            string newUri = (Path.GetRandomFileName().Replace(".", ""));
+            registeredUris.Add(newUri, library);
+            return Settings.Default.HTTPPort+"|"+newUri;
+        }
+
+        public byte[] GetDataForUri(string uri)
+        {
+            if (!registeredUris.ContainsKey(uri)) return null;
+            
+            var value = registeredUris[uri];
+            
+            registeredUris.Remove(uri);
+            var data = File.ReadAllBytes(libDirectory + "/" + value);
+
+            //log.Debug("File for requested uri ("+data.Length+"): " + libDirectory + "/" + value);
+            return data;
         }
     }
 }
