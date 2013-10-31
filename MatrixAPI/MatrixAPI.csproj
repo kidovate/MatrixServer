@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\SyncJob.cs" />
     <Compile Include="Encryption\AES.cs" />
     <Compile Include="Encryption\StringMD5.cs" />
     <Compile Include="Enum\MessageIdentifier.cs" />

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MatrixAPI.Encryption;
 using MatrixHost.MasterInterface;
+using MatrixHost.Nodes;
 using MatrixHost.Properties;
 using log4net;
 
@@ -17,6 +18,8 @@ namespace MatrixHost
         private static readonly ILog log = LogManager.GetLogger(typeof(Program));
 
         private static HostClient client;
+        private static NodeLibraryManager nodeLibraryManager;
+        private static NodeManager manager;
 
         public static void Main(string[] args)
         {
@@ -43,8 +46,12 @@ namespace MatrixHost
                 }
             }
 
+
             client = new HostClient(Settings.Default.MasterIP, Settings.Default.MasterPort, encrypt, hash);
             client.Startup();
+
+            nodeLibraryManager = new NodeLibraryManager("CompiledNodes", client);
+            manager = new NodeManager("CompiledNodes");
 
             Console.ReadLine();
         }

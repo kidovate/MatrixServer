@@ -10,7 +10,8 @@ namespace MatrixMaster
 {
     class MainClass
     {
-        static NodeManager manager;
+        private static NodeManager manager;
+        private static NodeLibraryManager nodeLibraryManager;
         private static HostInterface hostInterface;
         private static readonly ILog log = LogManager.GetLogger(typeof (MainClass));
         private static EncryptionKeyDB keyDb;
@@ -30,6 +31,9 @@ namespace MatrixMaster
             hostInterface = new HostInterface(Settings.Default.Port, controller);
             hostInterface.Startup();
 
+            nodeLibraryManager = new NodeLibraryManager("CompiledNodes");
+            nodeLibraryManager.Initialize();
+            
             host = new NodeHost();
 
             Console.WriteLine("Press any key to quit...");

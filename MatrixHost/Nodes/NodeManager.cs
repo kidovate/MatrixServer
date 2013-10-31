@@ -12,6 +12,7 @@ namespace MatrixHost.Nodes
         string libFolderPath;
         public static string libFolderName;
         private static readonly ILog log = LogManager.GetLogger(typeof(NodeManager));
+        public static NodeManager Instance;
 
         public NodeManager(string folderName)
         {
@@ -20,6 +21,7 @@ namespace MatrixHost.Nodes
             log.Info("Initializing Node library loader...");
             if (!Directory.Exists(libFolderPath))
                 Directory.CreateDirectory(libFolderPath);
+            Instance = this;
         }
 
         /// <summary>

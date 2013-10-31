@@ -38,47 +38,27 @@
     <Reference Include="log4net">
       <HintPath>..\lib\log4net.dll</HintPath>
     </Reference>
+    <Reference Include="protobuf-net, Version=2.0.0.668, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\MatrixAPI\bin\Debug\protobuf-net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
-    <Reference Include="Castle.Core">
-      <HintPath>..\lib\Castle.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Castle.Facilities.EventWiring">
-      <HintPath>..\lib\Castle.Facilities.EventWiring.dll</HintPath>
-    </Reference>
-    <Reference Include="Castle.Facilities.FactorySupport">
-      <HintPath>..\lib\Castle.Facilities.FactorySupport.dll</HintPath>
-    </Reference>
-    <Reference Include="Castle.Facilities.Logging">
-      <HintPath>..\lib\Castle.Facilities.Logging.dll</HintPath>
-    </Reference>
-    <Reference Include="Castle.Facilities.Remoting">
-      <HintPath>..\lib\Castle.Facilities.Remoting.dll</HintPath>
-    </Reference>
-    <Reference Include="Castle.Facilities.Synchronize">
-      <HintPath>..\lib\Castle.Facilities.Synchronize.dll</HintPath>
-    </Reference>
-    <Reference Include="Castle.Facilities.WcfIntegration">
-      <HintPath>..\lib\Castle.Facilities.WcfIntegration.dll</HintPath>
-    </Reference>
-    <Reference Include="Castle.Services.Logging.Log4netIntegration">
-      <HintPath>..\lib\Castle.Services.Logging.Log4netIntegration.dll</HintPath>
-    </Reference>
-    <Reference Include="Castle.Services.Logging.NLogIntegration">
-      <HintPath>..\lib\Castle.Services.Logging.NLogIntegration.dll</HintPath>
-    </Reference>
     <Reference Include="Castle.Windsor">
       <HintPath>..\lib\Castle.Windsor.dll</HintPath>
     </Reference>
+    <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\ControllerPortal.cs" />
     <Compile Include="Data\Host.cs" />
     <Compile Include="Data\HostCache.cs" />
+    <Compile Include="Nodes\NodeHost.cs" />
     <Compile Include="Encryption\EncryptionKeyDB.cs" />
     <Compile Include="Enums\HostStatus.cs" />
     <Compile Include="Exceptions\InvalidMessageException.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Nodes\NodeLibraryManager.cs" />
     <Compile Include="Nodes\NodeManager.cs" />
     <Compile Include="Nodes\NodeInstaller.cs" />
     <Compile Include="Properties\Settings.Designer.cs">

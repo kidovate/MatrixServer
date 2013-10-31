@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using MatrixAPI.Data;
 using MatrixAPI.Encryption;
 using MatrixAPI.Enum;
@@ -39,7 +38,6 @@ namespace MatrixHost.MasterInterface
 
         private byte[] keyHash;
 
-        private readonly NodeLibraryManager nodeManager;
 
         private Dictionary<int, string> receivedNodeURLs = new Dictionary<int, string>(); 
 
@@ -48,12 +46,11 @@ namespace MatrixHost.MasterInterface
         /// </summary>
         /// <param name="serverIp">Master server IP</param>
         /// <param name="serverPort">Master server port.</param>
-        public HostClient(string serverIp, int serverPort, AES encryption, byte[] keyHash, NodeLibraryManager nodeManager)
+        public HostClient(string serverIp, int serverPort, AES encryption, byte[] keyHash)
         {
             log.Info("Creating a new HostClient.");
             this.encryption = encryption;
             this.keyHash = keyHash;
-            this.nodeManager = nodeManager;
             context = ZmqContext.Create();
             socket = context.CreateSocket(SocketType.DEALER);
             socket.TcpKeepalive = TcpKeepaliveBehaviour.Enable;
@@ -154,10 +151,10 @@ namespace MatrixHost.MasterInterface
             bool librariesSynced = false;
             do
             {
-                nodeManager.IndexLibraries();
+                NodeLibraryManager.Instance.IndexLibraries();
                 
                 //Serialize for upload
-                var libraryIndex = nodeManager.FileIndex;
+                var libraryIndex = NodeLibraryManager.Instance.FileIndex;
                 byte[] serializedIndex;
                 using (var ms = new MemoryStream())
                 {
@@ -170,12 +167,14 @@ namespace MatrixHost.MasterInterface
 
                 //Wait for response
                 var resp = socket.ReceiveMessage();
+
+                var data = DecryptMessage(resp.First.Buffer.Skip(1).ToArray());
                 
                 if(resp.First.Buffer[0] == (byte)MessageIdentifier.NodeSync)
                 {
                     //Perform some synchronization job
-                    nodeManager.PerformSyncJob(
-                        Serializer.Deserialize<SyncJob>(new MemoryStream(resp.First.Buffer.Skip(1).ToArray())));
+                    NodeLibraryManager.Instance.PerformSyncJob(
+                        Serializer.Deserialize<SyncJob>(new MemoryStream(data)));
                 }else
                 {
                     librariesSynced = true;
@@ -190,6 +189,16 @@ namespace MatrixHost.MasterInterface
 
                 log.Debug("Received message: " + Enum.GetName(typeof(MessageIdentifier), msg.First.Buffer[0]));
             }
+        }
+
+        /// <summary>
+        /// Decrypt an encrypted message.
+        /// </summary>
+        /// <param name="encrypted"></param>
+        /// <returns></returns>
+        private byte[] DecryptMessage(byte[] encrypted)
+        {
+            return encryption.Decrypt(encrypted);
         }
 
         private void LogUnexpectedMessage(byte[] buffer)
@@ -223,12 +232,12 @@ namespace MatrixHost.MasterInterface
         /// Send the request for the URL to the library for downloading.
         /// </summary>
         /// <param name="nodeLibDownloader"></param>
-        public string RequestLibraryURL(string library, int reqId, NodeLibDownloader nodeLibDownloader)
+        public string RequestLibraryURL(string library, int reqId, NodeLibraryManager nodeLibDownloader)
         {
             socket.Send(BuildMessage(MessageIdentifier.GetLibraryURL, Encoding.Unicode.GetBytes(reqId+":"+library), true));
             var message = socket.ReceiveMessage();
             //todo: check if it actually is a url, this is really hacky for now
-            var data = Encoding.UTF8.GetString(message.First.Buffer.Skip(1).ToArray());
+            var data = Encoding.UTF8.GetString(DecryptMessage(message.First.Buffer.Skip(1).ToArray()));
             var url = data.Split(':')[1];
             return url;
         }

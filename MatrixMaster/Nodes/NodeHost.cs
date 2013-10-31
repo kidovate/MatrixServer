@@ -29,7 +29,7 @@ namespace MatrixMaster.Nodes
         /// <returns></returns>
         public string GetDownloadUrl(string library)
         {
-            return "https://dl.dropboxusercontent.com/u/1330616/Documentation-2013-07-22.zip";
+            return "dl.dropboxusercontent.com/u/1330616/Documentation-2013-07-22.zip";
         }
     }
 }

@@ -1,15 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using MatrixAPI.Data;
 using MatrixAPI.Encryption;
 using MatrixAPI.Enum;
-using MatrixHost.Nodes;
 using MatrixMaster.Encryption;
 using MatrixMaster.Enums;
-using MatrixMaster.Exceptions;
 using MatrixMaster.Nodes;
 using MatrixMaster.Servers;
+using ProtoBuf;
 using log4net;
 
 namespace MatrixMaster.Data
@@ -45,7 +46,7 @@ namespace MatrixMaster.Data
         public Host()
         {
             hostInfo = new HostInfo() {Id = HostCache.RandomId()};
-            status = HostStatus.NoEncryption;
+            status = HostStatus.NoIdentity;
         }
 
         /// <summary>
@@ -61,7 +62,7 @@ namespace MatrixMaster.Data
            // if(!Enum.IsDefined(typeof(HostInterface), message[0]))
            //     throw new InvalidMessageException();
 
-            if(status == HostStatus.Operating && message.Length > 1)
+            if(status > HostStatus.NoEncryption && message.Length > 1)
             {
                 //Decrypt message
                 var decrypt = encryption.Decrypt(message.Skip(1).ToArray());
@@ -71,6 +72,7 @@ namespace MatrixMaster.Data
                 message = finalMessage;
             }
 
+            log.Debug("Received message: "+Enum.GetName(typeof(MessageIdentifier), message[0]));
             switch((MessageIdentifier)message[0])
             {
                 //Coming from client, this is confirming an identity.
@@ -105,7 +107,26 @@ namespace MatrixMaster.Data
                         status = HostStatus.SyncNodes;
                         inter.SendTo(hostInfo, BuildMessage(MessageIdentifier.ConfirmEncryption, null));
                         encryption = encrypt;
+                    }
+                    break;
+                case MessageIdentifier.NodeSync:
+                    var inputIndex = Serializer.Deserialize <Dictionary<string, byte[]>>(new MemoryStream(message.Skip(1).ToArray()));
+                    var syncJob = NodeLibraryManager.Instance.CreateSyncJob(inputIndex);
+                    if(syncJob == null)
+                    {
+                        inter.SendTo(hostInfo, BuildMessage(MessageIdentifier.BeginOperation, null));
                         inter.Controller.OnHostAdded(hostInfo);
+                        status = HostStatus.Operating;
+                    }else
+                    {
+                        byte[] serializedJob;
+                        using (var ms = new MemoryStream())
+                        {
+                            Serializer.Serialize(ms, syncJob);
+                            serializedJob = ms.ToArray();
+                            status = HostStatus.SyncNodes;
+                        }
+                        inter.SendTo(hostInfo, BuildMessage(MessageIdentifier.NodeSync, serializedJob));
                     }
                     break;
                 case MessageIdentifier.GetLibraryURL:
