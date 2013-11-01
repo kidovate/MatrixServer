@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -37,6 +38,8 @@ namespace MatrixHost.MasterInterface
         private AES encryption;
 
         private byte[] keyHash;
+
+        private Dictionary<int, bool> NodeExistsResponses = new Dictionary<int, bool>();  
 
 
         private Dictionary<int, string> receivedNodeURLs = new Dictionary<int, string>(); 
@@ -188,11 +191,22 @@ namespace MatrixHost.MasterInterface
 
             socket.Send(BuildMessage(MessageIdentifier.BeginOperation, null, true));
 
+            log.Info("Connection and sync procedure complete, commencing operation.");
+
             while(status == 1)
             {
                 msg = socket.ReceiveMessage();
 
                 log.Debug("Received message: " + Enum.GetName(typeof(MessageIdentifier), msg.First.Buffer[0]));
+
+                switch((MessageIdentifier)msg.First.Buffer[0])
+                {
+                    case MessageIdentifier.NodeVerify:
+                        var reqId = BitConverter.ToInt32(msg.First.Buffer, 1);
+                        var response = BitConverter.ToBoolean(msg.First.Buffer, sizeof (int) + 1);
+                        NodeExistsResponses.Add(reqId, response);
+                        break;
+                }
             }
         }
 
@@ -245,6 +259,37 @@ namespace MatrixHost.MasterInterface
             var data = Encoding.UTF8.GetString(DecryptMessage(message.First.Buffer.Skip(1).ToArray()));
             var url = data.Split(':')[1];
             return url;
+        }
+
+        /// <summary>
+        /// Verify the NodeInfo identifier exists and impliments RMI type
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="identifier"></param>
+        /// <returns></returns>
+        public bool AsyncNodeVerify(Type type, NodeInfo identifier)
+        {
+            int randId = new Random().Next();
+            using (var data = new MemoryStream())
+            {
+                Serializer.Serialize(data, identifier);
+                var reqId = BitConverter.GetBytes(randId);
+                var identifierBytes = data.ToArray();
+                byte[] finalData = new byte[reqId.Length+identifierBytes.Length];
+                reqId.CopyTo(finalData, 0);
+                identifierBytes.CopyTo(finalData, identifierBytes.Length);
+                byte[] message = BuildMessage(MessageIdentifier.NodeVerify, identifierBytes, true);
+                socket.Send(message);
+            }
+            
+            while(!NodeExistsResponses.ContainsKey(randId))
+            {
+                Thread.Sleep(100);
+            }
+
+            var response = NodeExistsResponses[randId];
+            NodeExistsResponses.Remove(randId);
+            return response;
         }
     }
 }

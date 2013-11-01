@@ -1,4 +1,5 @@
-﻿using ProtoBuf;
+﻿using System.Linq;
+using ProtoBuf;
 
 namespace MatrixAPI.Data
 {
@@ -17,11 +18,24 @@ namespace MatrixAPI.Data
         /// <summary>
         /// ID of host staging node
         /// </summary>
-        [ProtoMember(3)] public int HostID;
+        [ProtoMember(3)] public byte[] HostID;
 
         /// <summary>
         /// Fully qualified RMI interface for node
         /// </summary>
-        [ProtoMember(2)] public string QualifiedRMI;
+        [ProtoMember(2)] public string RMITypeName;
+
+        /// <summary>
+        /// Is it exactly the same as another?
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        public override bool Equals(object other)
+        {
+            if (!(other is NodeInfo)) return false;
+            var otherNode = (NodeInfo) other;
+            return otherNode.Id == Id && otherNode.RMITypeName.Equals(RMITypeName) &&
+                   otherNode.HostID.SequenceEqual(otherNode.HostID);
+        }
     }
 }

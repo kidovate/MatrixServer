@@ -67,6 +67,7 @@
     <Compile Include="Nodes\NodeLibraryManager.cs" />
     <Compile Include="Nodes\NodeManager.cs" />
     <Compile Include="Nodes\NodeInstaller.cs" />
+    <Compile Include="Nodes\NodePool.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>

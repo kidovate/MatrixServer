@@ -154,6 +154,23 @@ namespace MatrixMaster.Data
                         inter.Controller.OnHostAdded(hostInfo);
                     }
                     break;
+                case MessageIdentifier.NodeVerify:
+                    int verId = BitConverter.ToInt32(message, 1);
+                    NodeInfo info;
+                    using (MemoryStream ms = new MemoryStream())
+                    {
+                        var inputBytes = message.Skip(1 + sizeof (int)).ToArray();
+                        ms.Write(inputBytes, 0, inputBytes.Length);
+                        ms.Position = 0;
+                        info = Serializer.Deserialize<NodeInfo>(ms);
+                    }
+
+                    var response = NodePool.Instance.CheckNodeExists(info);
+                    var respBytes = new byte[sizeof (int) + sizeof (bool)];
+                    BitConverter.GetBytes(verId).CopyTo(respBytes, 0);
+                    BitConverter.GetBytes(response).CopyTo(respBytes, sizeof(int));
+                    inter.SendTo(hostInfo, BuildMessage(MessageIdentifier.NodeVerify, respBytes));
+                    break;
             }
         }
 

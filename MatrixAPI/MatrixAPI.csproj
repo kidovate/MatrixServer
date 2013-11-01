@@ -46,18 +46,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\NodeRMI.cs" />
+    <Compile Include="Data\NodeVerifyResponse.cs" />
     <Compile Include="Data\SyncJob.cs" />
     <Compile Include="Encryption\AES.cs" />
     <Compile Include="Encryption\StringMD5.cs" />
     <Compile Include="Enum\MessageIdentifier.cs" />
+    <Compile Include="Exceptions\InvalidNodeTypeException.cs" />
     <Compile Include="Interfaces\IMatrixPortal.cs" />
     <Compile Include="Data\NodeInfo.cs" />
     <Compile Include="Interfaces\INode.cs" />
+    <Compile Include="Interfaces\IRMIInterface.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Interfaces\INodeController.cs" />
     <Compile Include="Interfaces\IControllerPortal.cs" />
     <Compile Include="Data\HostInfo.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

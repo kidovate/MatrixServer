@@ -53,6 +53,11 @@
         /// <summary>
         /// Request a library URL for downloading.
         /// </summary>
-        GetLibraryURL
+        GetLibraryURL,
+
+        /// <summary>
+        /// Verify a node exists.
+        /// </summary>
+        NodeVerify
     }
 }
