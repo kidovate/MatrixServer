@@ -20,6 +20,7 @@ namespace MatrixHost
         private static HostClient client;
         private static NodeLibraryManager nodeLibraryManager;
         private static NodeManager manager;
+        private static NodePool pool;
 
         public static void Main(string[] args)
         {
@@ -49,6 +50,8 @@ namespace MatrixHost
 
             client = new HostClient(Settings.Default.MasterIP, Settings.Default.MasterPort, encrypt, hash);
             client.Startup();
+
+            pool = new NodePool();
 
             nodeLibraryManager = new NodeLibraryManager("CompiledNodes", client);
 

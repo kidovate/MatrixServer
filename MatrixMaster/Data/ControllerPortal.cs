@@ -3,47 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using MatrixAPI.Data;
+using MatrixAPI.Exceptions;
 using MatrixAPI.Interfaces;
+using MatrixMaster.Exceptions;
+using MatrixMaster.Nodes;
+using log4net;
 
 namespace MatrixMaster.Data
 {
     /// <summary>
     /// Controller portal implementation.
     /// </summary>
-    public class ControllerPortal  : IControllerPortal
+    public class ControllerPortal  : MatrixPortal, IControllerPortal
     {
-        /// <summary>
-        /// Retreive a proxied node RMI identified by ID.
-        /// </summary>
-        /// <typeparam name="T">RMI interface</typeparam>
-        /// <param name="identifier">NodeInfo identifier object</param>
-        /// <returns></returns>
-        public T GetNodeProxy<T>(NodeInfo identifier)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Retrieve a proxied node RMI with lowest load
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public T GetNodeProxy<T>()
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Get node list of a type. 
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="rmi"></param>
-        /// <returns></returns>
-        public List<NodeInfo> GetNodeList<T>(T rmi)
-        {
-            throw new NotImplementedException();
-        }
-
+        private static readonly ILog log = LogManager.GetLogger(typeof(ControllerPortal));
         /// <summary>
         /// Request a node launch in the cluster.
         /// </summary>
@@ -55,8 +28,9 @@ namespace MatrixMaster.Data
         /// </param>
         public NodeInfo LaunchNode<T>()
         {
-            Console.WriteLine("TEMP = Launch node requested");
-            return null;
+            log.Debug("Launching a new node with type "+typeof(T).FullName);
+
+            return NodePool.Instance.LaunchNode<T>();
         }
 
         /// <summary>

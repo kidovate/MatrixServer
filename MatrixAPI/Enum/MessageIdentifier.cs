@@ -58,6 +58,11 @@
         /// <summary>
         /// Verify a node exists.
         /// </summary>
-        NodeVerify
+        NodeVerify,
+
+        /// <summary>
+        /// Launch a new node instance.
+        /// </summary>
+        LaunchNode
     }
 }

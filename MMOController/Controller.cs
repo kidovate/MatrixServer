@@ -26,8 +26,9 @@ namespace MMOController
 	
 		public void OnHostAdded (MatrixAPI.Data.HostInfo newHost)
 		{
-			matrixPortal.LaunchNode<LoginNode>();
-	        log.Info("Launching login node on new host...");
+            log.Info("Launching login node on new host...");
+            var proxy = matrixPortal.GetNodeProxy<ILoginNode>(matrixPortal.LaunchNode<ILoginNode>());
+		    log.Debug("It seems to have worked, result of Login(): "+proxy.Login("test", "test"));
 		}
 		#endregion
 	}

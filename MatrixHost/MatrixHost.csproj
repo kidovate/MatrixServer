@@ -54,6 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MasterInterface\HostClient.cs" />
+    <Compile Include="Nodes\NodePool.cs" />
     <Compile Include="Nodes\NodeProxyBuilder.cs" />
     <Compile Include="Portal\MatrixPortal.cs" />
     <Compile Include="Program.cs" />

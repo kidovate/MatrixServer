@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -27,6 +29,8 @@ namespace MatrixMaster.Data
         private static readonly ILog log = LogManager.GetLogger(typeof(Host));
         Timer heartbeat = new Timer(30000);
         private HostInterface lastInter;
+        private ObservableCollection<NodeInfo> _nodes;
+
         /// <summary>
         /// Returns the identifier, a 27 byte array.
         /// </summary>
@@ -44,6 +48,14 @@ namespace MatrixMaster.Data
         }
 
         /// <summary>
+        /// Node information.
+        /// </summary>
+        public ObservableCollection<NodeInfo> Nodes
+        {
+            get { return _nodes; }
+        } 
+
+        /// <summary>
         /// Create a new instance of a host with a random ID.
         /// </summary>
         public Host()
@@ -56,6 +68,30 @@ namespace MatrixMaster.Data
                                          status = HostStatus.Disconnected;
                                          lastInter.DisconnectHost(hostInfo);
                                      };
+            _nodes = new ObservableCollection<NodeInfo>();
+            _nodes.CollectionChanged += NodesCollectionChanged;
+        }
+
+        /// <summary>
+        /// Monitor the nodes array.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private void NodesCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
+        {
+            switch(args.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    using(MemoryStream ms = new MemoryStream())
+                    {
+                        Serializer.Serialize(ms, args.NewItems[0]);
+                        lastInter.SendTo(hostInfo, BuildMessage(MessageIdentifier.LaunchNode, ms.ToArray()));
+                    }
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                    NodePool.Instance.DestroyNode((NodeInfo)args.OldItems[0]);
+                    break;
+            }
         }
 
         /// <summary>

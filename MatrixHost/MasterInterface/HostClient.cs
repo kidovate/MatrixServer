@@ -39,7 +39,9 @@ namespace MatrixHost.MasterInterface
 
         private byte[] keyHash;
 
-        private Dictionary<int, bool> NodeExistsResponses = new Dictionary<int, bool>();  
+        private Dictionary<int, bool> NodeExistsResponses = new Dictionary<int, bool>();
+
+        public static HostClient Instance;
 
 
         private Dictionary<int, string> receivedNodeURLs = new Dictionary<int, string>(); 
@@ -52,6 +54,7 @@ namespace MatrixHost.MasterInterface
         public HostClient(string serverIp, int serverPort, AES encryption, byte[] keyHash)
         {
             log.Info("Creating a new HostClient.");
+            Instance = this;
             this.encryption = encryption;
             this.keyHash = keyHash;
             context = ZmqContext.Create();
@@ -198,13 +201,22 @@ namespace MatrixHost.MasterInterface
                 msg = socket.ReceiveMessage();
 
                 log.Debug("Received message: " + Enum.GetName(typeof(MessageIdentifier), msg.First.Buffer[0]));
-
+                var data = DecryptMessage(msg.First.Buffer.Skip(1).ToArray());
                 switch((MessageIdentifier)msg.First.Buffer[0])
                 {
                     case MessageIdentifier.NodeVerify:
-                        var reqId = BitConverter.ToInt32(msg.First.Buffer, 1);
-                        var response = BitConverter.ToBoolean(msg.First.Buffer, sizeof (int) + 1);
+                        var reqId = BitConverter.ToInt32(data, 0);
+                        var response = BitConverter.ToBoolean(data, sizeof (int));
                         NodeExistsResponses.Add(reqId, response);
+                        break;
+                    case MessageIdentifier.LaunchNode:
+                        using (MemoryStream ms = new MemoryStream())
+                        {
+                            ms.Write(data, 0, data.Length);
+                            ms.Position = 0;
+                            var nodeInfo = Serializer.Deserialize<NodeInfo>(ms);
+                            NodePool.Instance.LaunchNode(nodeInfo);
+                        }
                         break;
                 }
             }

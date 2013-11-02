@@ -1,26 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using MatrixAPI.Data;
 using MatrixAPI.Exceptions;
 using MatrixAPI.Interfaces;
-using MatrixHost.MasterInterface;
-using MatrixHost.Nodes;
+using MatrixMaster.Nodes;
 
-namespace MatrixHost.Portal
+namespace MatrixMaster.Data
 {
-    /// <summary>
-    /// Implementation of the matrix portal
-    /// </summary>
     public class MatrixPortal : IMatrixPortal
     {
-
-        private HostClient clientInterface;
-        public MatrixPortal(HostClient clientInterface)
-        {
-            this.clientInterface = clientInterface;
-        }
         /// <summary>
         /// Retreive a proxied node RMI identified by ID.
         /// </summary>
@@ -29,12 +17,8 @@ namespace MatrixHost.Portal
         /// <returns></returns>
         public T GetNodeProxy<T>(NodeInfo identifier)
         {
-            var type = typeof (T);
-            if (!type.IsInterface || !type.IsAssignableFrom(typeof(IRMIInterface)) || type.FullName != identifier.RMITypeName) throw new InvalidNodeTypeException();
-
-            bool isValid = clientInterface.AsyncNodeVerify(typeof(T), identifier);
-            if(!isValid) throw new InvalidNodeTypeException();
-
+            var node = NodePool.Instance.NodeForId(identifier.Id);
+            if (node == null) throw new NodeNotExistException();
             return NodeProxyBuilder.GetProxyForRMI<T>(identifier);
         }
 
@@ -45,7 +29,8 @@ namespace MatrixHost.Portal
         /// <returns></returns>
         public T GetNodeProxy<T>()
         {
-            throw new NotImplementedException();
+            var identifier = NodePool.Instance.NodeForRMI<T>();
+            return NodeProxyBuilder.GetProxyForRMI<T>(identifier);
         }
 
         /// <summary>

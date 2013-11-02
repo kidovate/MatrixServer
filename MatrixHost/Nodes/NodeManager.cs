@@ -1,3 +1,5 @@
+using System.Linq;
+using Castle.MicroKernel.Context;
 using Castle.Windsor;
 using System.IO;
 using System.Reflection;
@@ -66,6 +68,19 @@ namespace MatrixHost.Nodes
             var instance = container.Resolve<INodeController>();
             log.Debug("Instantiated NodeController: "+instance.GetType().FullName);
             return instance;
+        }
+
+        /// <summary>
+        /// Spawn a new instance.
+        /// </summary>
+        /// <param name="fullName"></param>
+        /// <returns></returns>
+        public INode CreateInstance(string fullName)
+        {
+            var handler = container.Kernel.GetHandlers(typeof (INode)).SingleOrDefault(e=>e.ComponentModel.Implementation.GetInterfaces().SingleOrDefault(f=>f.FullName == fullName) != null);
+            if (handler == null){ log.Debug("Cannot find an instance for "+fullName);return null;}
+            log.Debug("Launching a new instance: [RMI] "+fullName+" [IMPL] "+handler.ComponentModel.Implementation.FullName);
+            return (INode)handler.Resolve(CreationContext.CreateEmpty());
         }
 
         public void Shutdown()

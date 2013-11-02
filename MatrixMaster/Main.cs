@@ -16,6 +16,7 @@ namespace MatrixMaster
         private static readonly ILog log = LogManager.GetLogger(typeof (MainClass));
         private static EncryptionKeyDB keyDb;
         private static NodeHost host;
+        private static NodePool pool;
         public static void Main(string[] args)
         {
             log4net.Config.XmlConfigurator.Configure();
@@ -36,6 +37,8 @@ namespace MatrixMaster
             
             host = new NodeHost("CompiledNodes");
             log.Debug("Test download uri: "+host.GetDownloadUrl("MMOController.dll"));
+
+            pool = new NodePool(hostInterface);
 
             var webServer = NodeWebServer.Create(Settings.Default.HTTPPort);
             

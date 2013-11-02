@@ -13,7 +13,7 @@ namespace MatrixHost.Nodes
       container.Register(Classes
 			                .FromAssemblyInDirectory(new AssemblyFilter(NodeManager.libFolderName))
                             .BasedOn<INodeController>().OrBasedOn(typeof(INode)).WithService.FromInterface()
-			                
+                            .LifestyleTransient()
 			     );
    }
 }

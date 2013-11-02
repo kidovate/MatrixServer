@@ -53,6 +53,7 @@
     <Compile Include="Encryption\StringMD5.cs" />
     <Compile Include="Enum\MessageIdentifier.cs" />
     <Compile Include="Exceptions\InvalidNodeTypeException.cs" />
+    <Compile Include="Exceptions\NodeNotExistException.cs" />
     <Compile Include="Interfaces\IMatrixPortal.cs" />
     <Compile Include="Data\NodeInfo.cs" />
     <Compile Include="Interfaces\INode.cs" />

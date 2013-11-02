@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using MatrixAPI.Data;
+using MatrixMaster.Data;
+using MatrixMaster.Servers;
 
 namespace MatrixMaster.Nodes
 {
@@ -12,10 +14,12 @@ namespace MatrixMaster.Nodes
     {
         Dictionary<int, NodeInfo> nodes = new Dictionary<int, NodeInfo>();
         public static NodePool Instance;
+        private HostInterface hostInter;
 
-        public NodePool()
+        public NodePool(HostInterface hostInter)
         {
             Instance = this;
+            this.hostInter = hostInter;
         }
 
         /// <summary>
@@ -54,9 +58,9 @@ namespace MatrixMaster.Nodes
         /// </summary>
         /// <param name="rmiType"></param>
         /// <returns></returns>
-        public NodeInfo NodeForRMI(Type rmiType)
+        public NodeInfo NodeForRMI<T>()
         {
-            return nodes.Values.FirstOrDefault(e => e.RMITypeName == rmiType.FullName);
+            return nodes.Values.FirstOrDefault(e => e.RMITypeName == typeof(T).FullName);
         }
 
         /// <summary>
@@ -68,6 +72,22 @@ namespace MatrixMaster.Nodes
         {
             var node = nodes.Values.FirstOrDefault(e => e.Equals(info));
             return node != null;
+        }
+
+        /// <summary>
+        /// Launch a node on any server that doesn't already have the node on it.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        public NodeInfo LaunchNode<T>()
+        {
+            var hosts = HostCache.ConnectedHosts.Where(e => e.Value.Nodes.SingleOrDefault(x=>x.RMITypeName == typeof(T).FullName) == null).ToArray();
+            if (hosts.Length == 0) return null;
+            Host theHost = hosts[0].Value;
+            var newInfo = new NodeInfo()
+                              {HostID = theHost.Id, Id = new Random().Next(), RMITypeName = typeof (T).FullName};
+            theHost.Nodes.Add(newInfo);
+            nodes.Add(newInfo.Id, newInfo);
+            return newInfo;
         }
     }
 }
