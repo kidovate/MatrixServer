@@ -9,7 +9,7 @@ namespace MMOController
 	/// <summary>
 	/// MMO cluster node controller
 	/// </summary>
-	public class MMOCluster : INodeController
+	public class MMOCluster : INodeController, IMMOCluster
 	{
         private static readonly ILog log = LogManager.GetLogger(typeof(MMOCluster));
 		IControllerPortal matrixPortal;
@@ -28,7 +28,8 @@ namespace MMOController
 		{
             log.Info("Launching login node on new host...");
             var proxy = matrixPortal.GetNodeProxy<ILoginNode>(matrixPortal.LaunchNode<ILoginNode>());
-		    log.Debug("It seems to have worked, result of Login(): "+proxy.Login("test", "test"));
+            var result = proxy.Login("test", "test");
+            log.Info("It seems to have worked, result of Login(): " + result);
 		}
 		#endregion
 	}

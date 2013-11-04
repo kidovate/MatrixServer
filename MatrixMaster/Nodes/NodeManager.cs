@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Castle.Windsor;
 using Castle.Windsor.Installer;
 using Castle.Windsor.Configuration;
@@ -74,6 +75,15 @@ namespace MatrixMaster
         public void Shutdown()
         {
             //Shutdown all instances
+        }
+
+        public Type ControllerRMIType()
+        {
+            var handlers = container.Kernel.GetHandlers(typeof(INodeController));
+            if (handlers.Length == 0) return null;
+            return
+                handlers[0].ComponentModel.Implementation.GetInterfaces().FirstOrDefault(
+                    e => e.IsAssignableFrom(typeof (IRMIInterface)));
         }
     }
 }

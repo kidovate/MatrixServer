@@ -1,9 +1,12 @@
 ﻿using System;
+using System.IO;
 using System.Threading;
 using MatrixAPI.Data;
 using MatrixAPI.Enum;
 using MatrixAPI.Interfaces;
 using MatrixMaster.Data;
+using MatrixMaster.Nodes;
+using ProtoBuf;
 using ZeroMQ;
 using log4net;
 
@@ -20,6 +23,7 @@ namespace MatrixMaster.Servers
         private Thread serverThread;
         private static readonly ILog log = LogManager.GetLogger(typeof(HostInterface));
         private int status = 0;
+        public static HostInterface Instance;
         /// <summary>
         /// Create a new Host Interface server.
         /// </summary>
@@ -32,7 +36,10 @@ namespace MatrixMaster.Servers
             server = context.CreateSocket(SocketType.ROUTER);
             server.TcpKeepalive = TcpKeepaliveBehaviour.Enable;
             this.controller = controller;
-            controller.Initialize(new ControllerPortal());
+            var controllerPortal = new ControllerPortal();
+            controllerPortal.SetNodeID(0);
+            controller.Initialize(controllerPortal);
+            Instance = this;
         }
 
         private INodeController controller;
@@ -140,6 +147,20 @@ namespace MatrixMaster.Servers
         {
             HostCache.ConnectedHosts.Remove(hostInfo.Id);
             //todo: node cache, remove the associated nodes
+        }
+
+        /// <summary>
+        /// Route a RMI response to the host.
+        /// </summary>
+        /// <param name="rmi"></param>
+        public void RouteRMIResponse(NodeRMI rmi)
+        {
+            var targetHost = HostCache.FindHost(NodePool.Instance.NodeForId(rmi.SNodeID).HostID);
+            using(MemoryStream ms = new MemoryStream())
+            {
+                Serializer.Serialize(ms, rmi);
+                SendTo(targetHost.Info, targetHost.BuildMessage(MessageIdentifier.RMIResponse, ms.ToArray()));
+            }
         }
     }
 }

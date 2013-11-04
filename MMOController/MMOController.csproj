@@ -41,6 +41,7 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Controller.cs" />
     <Compile Include="ILoginNode.cs" />
+    <Compile Include="IMMOCluster.cs" />
     <Compile Include="LoginNode.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using ProtoBuf;
 
 namespace MatrixAPI.Data
@@ -24,6 +25,11 @@ namespace MatrixAPI.Data
         /// Fully qualified RMI interface for node
         /// </summary>
         [ProtoMember(2)] public string RMITypeName;
+
+        /// <summary>
+        /// Locally resolved type. Not always updated.
+        /// </summary>
+        public Type RMIResolvedType;
 
         /// <summary>
         /// Is it exactly the same as another?

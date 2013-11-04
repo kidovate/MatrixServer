@@ -5,6 +5,7 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Timers;
 using MatrixAPI.Data;
 using MatrixAPI.Encryption;
@@ -105,8 +106,9 @@ namespace MatrixMaster.Data
             if (status == HostStatus.Disconnected)
                 return;
 
-           // if(!Enum.IsDefined(typeof(HostInterface), message[0]))
-           //     throw new InvalidMessageException();
+            //Reset heartbeat
+            heartbeat.Stop();
+            heartbeat.Start();
 
             if(status > HostStatus.NoEncryption && message.Length > 1)
             {
@@ -118,9 +120,13 @@ namespace MatrixMaster.Data
                 message = finalMessage;
             }
 
-            log.Debug("Received message: "+Enum.GetName(typeof(MessageIdentifier), message[0]));
+            if(message[0] != (byte)MessageIdentifier.Heartbeat) 
+                log.Debug("Received message: "+Enum.GetName(typeof(MessageIdentifier), message[0]));
             switch((MessageIdentifier)message[0])
             {
+                case MessageIdentifier.Heartbeat:
+                    inter.SendTo(hostInfo, BuildMessage(MessageIdentifier.Heartbeat, null));
+                    break;
                 //Coming from client, this is confirming an identity.
                 case MessageIdentifier.SetIdentity:
 					if(status != HostStatus.NoIdentity){ log.Debug("Host already has registered."); break; }
@@ -187,7 +193,12 @@ namespace MatrixMaster.Data
                     {
                         status = HostStatus.Operating;
                         log.Info("New host ready for operation.");
-                        inter.Controller.OnHostAdded(hostInfo);
+                        try{
+                            Task.Factory.StartNew(()=>inter.Controller.OnHostAdded(hostInfo));
+                        }catch(Exception ex)
+                        {
+                            log.Error("Error not caught by Controller, "+ex.ToString());
+                        }
                     }
                     break;
                 case MessageIdentifier.NodeVerify:
@@ -206,6 +217,23 @@ namespace MatrixMaster.Data
                     BitConverter.GetBytes(verId).CopyTo(respBytes, 0);
                     BitConverter.GetBytes(response).CopyTo(respBytes, sizeof(int));
                     inter.SendTo(hostInfo, BuildMessage(MessageIdentifier.NodeVerify, respBytes));
+                    break;
+                case MessageIdentifier.RMIResponse:
+                    if(status != HostStatus.Operating) return;
+                    using(MemoryStream ms = new MemoryStream())
+                    {
+                        var data = message.Skip(1).ToArray();
+                        ms.Write(data, 0, data.Length);
+                        ms.Position = 0;
+                        var rmi = Serializer.Deserialize<NodeRMI>(ms);
+                        var destoNode = NodePool.Instance.NodeForId(rmi.SNodeID);
+                        if(destoNode == null) return;
+                        if(destoNode.Id == 0) NodePool.Instance.HandleRMIResponse(rmi);
+                        else
+                        {
+                            lastInter.RouteRMIResponse(rmi);
+                        }
+                    }
                     break;
             }
         }

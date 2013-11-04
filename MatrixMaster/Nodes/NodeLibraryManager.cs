@@ -98,7 +98,7 @@ namespace MatrixMaster.Nodes
                 }
             }
             var operationCount = job.filesToDelete.Count + job.filesToDownload.Count;
-            log.Debug("Generated SyncJob with "+(operationCount)+" operations.");
+            if(operationCount > 0) log.Debug("Generated SyncJob with "+(operationCount)+" operations.");
             return operationCount == 0 ? null : job;
 	    }
 	}

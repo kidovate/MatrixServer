@@ -49,11 +49,9 @@ namespace MatrixHost
 
 
             client = new HostClient(Settings.Default.MasterIP, Settings.Default.MasterPort, encrypt, hash);
-            client.Startup();
-
-            pool = new NodePool();
-
             nodeLibraryManager = new NodeLibraryManager("CompiledNodes", client);
+            pool = new NodePool();
+            client.Startup();
 
             Console.ReadLine();
         }

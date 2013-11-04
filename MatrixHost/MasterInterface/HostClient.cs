@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Timers;
 using MatrixAPI.Data;
 using MatrixAPI.Encryption;
 using MatrixAPI.Enum;
@@ -35,6 +36,8 @@ namespace MatrixHost.MasterInterface
 
         private static readonly ILog log = LogManager.GetLogger(typeof(HostClient));
 
+        private System.Timers.Timer heartbeat = new System.Timers.Timer(3000);
+
         private AES encryption;
 
         private byte[] keyHash;
@@ -44,7 +47,9 @@ namespace MatrixHost.MasterInterface
         public static HostClient Instance;
 
 
-        private Dictionary<int, string> receivedNodeURLs = new Dictionary<int, string>(); 
+        private Dictionary<int, string> receivedNodeURLs = new Dictionary<int, string>();
+
+        private int heartbeatAttempts = 0;
 
         /// <summary>
         /// Create a new host client.
@@ -54,6 +59,8 @@ namespace MatrixHost.MasterInterface
         public HostClient(string serverIp, int serverPort, AES encryption, byte[] keyHash)
         {
             log.Info("Creating a new HostClient.");
+            heartbeat.Elapsed += (sender, args) => SendHeartbeat();
+            heartbeat.Stop();
             Instance = this;
             this.encryption = encryption;
             this.keyHash = keyHash;
@@ -62,6 +69,22 @@ namespace MatrixHost.MasterInterface
             socket.TcpKeepalive = TcpKeepaliveBehaviour.Enable;
             masterIp = serverIp;
             masterPort = serverPort;
+        }
+
+        /// <summary>
+        /// Conditionally send out a heartbeat
+        /// </summary>
+        private void SendHeartbeat()
+        {
+            if(heartbeatAttempts > 4)
+            {
+                log.Debug("Heartbeat timeout for "+heartbeat.Interval*heartbeatAttempts/1000+" seconds...");
+                heartbeatAttempts++;
+                return;
+            }
+
+            socket.Send(BuildMessage(MessageIdentifier.Heartbeat, null, true));
+            heartbeatAttempts++;
         }
 
         public void Startup()
@@ -157,6 +180,7 @@ namespace MatrixHost.MasterInterface
             bool librariesSynced = false;
             do
             {
+                heartbeat.Stop();
                 NodeLibraryManager.Instance.IndexLibraries();
                 
                 //Serialize for upload
@@ -179,8 +203,10 @@ namespace MatrixHost.MasterInterface
                 if(resp.First.Buffer[0] == (byte)MessageIdentifier.NodeSync)
                 {
                     //Perform some synchronization job
+                    heartbeat.Start();
                     NodeLibraryManager.Instance.PerformSyncJob(
                         Serializer.Deserialize<SyncJob>(new MemoryStream(data)));
+                    heartbeat.Stop();
                 }else
                 {
                     librariesSynced = true;
@@ -195,12 +221,15 @@ namespace MatrixHost.MasterInterface
             socket.Send(BuildMessage(MessageIdentifier.BeginOperation, null, true));
 
             log.Info("Connection and sync procedure complete, commencing operation.");
+            heartbeat.Start();
 
             while(status == 1)
             {
-                msg = socket.ReceiveMessage();
+                msg = socket.ReceiveMessage(TimeSpan.FromMilliseconds(50));
+                if (msg.FrameCount == 0) continue;
 
-                log.Debug("Received message: " + Enum.GetName(typeof(MessageIdentifier), msg.First.Buffer[0]));
+                if((MessageIdentifier)msg.First.Buffer[0] != MessageIdentifier.Heartbeat) 
+                    log.Debug("Received message: " + Enum.GetName(typeof(MessageIdentifier), msg.First.Buffer[0]));
                 var data = DecryptMessage(msg.First.Buffer.Skip(1).ToArray());
                 switch((MessageIdentifier)msg.First.Buffer[0])
                 {
@@ -217,6 +246,19 @@ namespace MatrixHost.MasterInterface
                             var nodeInfo = Serializer.Deserialize<NodeInfo>(ms);
                             NodePool.Instance.LaunchNode(nodeInfo);
                         }
+                        break;
+                    case MessageIdentifier.RMIInvoke:
+                        NodeRMI rmi;
+                        using(MemoryStream ms = new MemoryStream())
+                        {
+                            ms.Write(data, 0, data.Length);
+                            ms.Position = 0;
+                            rmi = Serializer.Deserialize<NodeRMI>(ms);
+                        }
+                        NodePool.Instance.AsyncProcessRMI(rmi);
+                        break;
+                    case MessageIdentifier.Heartbeat:
+                        heartbeatAttempts = 0;
                         break;
                 }
             }
@@ -302,6 +344,19 @@ namespace MatrixHost.MasterInterface
             var response = NodeExistsResponses[randId];
             NodeExistsResponses.Remove(randId);
             return response;
+        }
+
+        /// <summary>
+        /// Send out a RMI response.
+        /// </summary>
+        /// <param name="rmi"></param>
+        public void ProcessRMIResponse(NodeRMI rmi)
+        {
+            using(MemoryStream ms = new MemoryStream())
+            {
+                Serializer.Serialize(ms, rmi);
+                socket.Send(BuildMessage(MessageIdentifier.RMIResponse, ms.ToArray(), true));
+            }
         }
     }
 }

@@ -63,6 +63,21 @@
         /// <summary>
         /// Launch a new node instance.
         /// </summary>
-        LaunchNode
+        LaunchNode,
+
+        /// <summary>
+        /// Invoke a node RMI
+        /// </summary>
+        RMIInvoke,
+
+        /// <summary>
+        /// RMI return value
+        /// </summary>
+        RMIResponse,
+
+        /// <summary>
+        /// Simple heartbeat
+        /// </summary>
+        Heartbeat
     }
 }

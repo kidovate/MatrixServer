@@ -60,5 +60,10 @@ namespace MatrixMaster.Data
         {
             throw new NotImplementedException();
         }
+
+        internal void SetNodeID(int id)
+        {
+            base.SetNodeID(id);
+        }
     }
 }

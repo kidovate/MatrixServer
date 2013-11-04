@@ -3,6 +3,7 @@ using Castle.MicroKernel.Context;
 using Castle.Windsor;
 using System.IO;
 using System.Reflection;
+using MatrixAPI.Data;
 using MatrixAPI.Interfaces;
 using log4net;
 
@@ -75,11 +76,12 @@ namespace MatrixHost.Nodes
         /// </summary>
         /// <param name="fullName"></param>
         /// <returns></returns>
-        public INode CreateInstance(string fullName)
+        public INode CreateInstance(NodeInfo info)
         {
-            var handler = container.Kernel.GetHandlers(typeof (INode)).SingleOrDefault(e=>e.ComponentModel.Implementation.GetInterfaces().SingleOrDefault(f=>f.FullName == fullName) != null);
-            if (handler == null){ log.Debug("Cannot find an instance for "+fullName);return null;}
-            log.Debug("Launching a new instance: [RMI] "+fullName+" [IMPL] "+handler.ComponentModel.Implementation.FullName);
+            var handler = container.Kernel.GetHandlers(typeof (INode)).SingleOrDefault(e=>e.ComponentModel.Implementation.GetInterfaces().SingleOrDefault(f=>f.FullName == info.RMITypeName) != null);
+            if (handler == null){ log.Debug("Cannot find an instance for "+info.RMITypeName);return null;}
+            log.Debug("Launching a new instance: [RMI] "+info.RMITypeName+" [IMPL] "+handler.ComponentModel.Implementation.FullName);
+            info.RMIResolvedType = handler.ComponentModel.Implementation;
             return (INode)handler.Resolve(CreationContext.CreateEmpty());
         }
 

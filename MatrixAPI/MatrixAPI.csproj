@@ -49,11 +49,13 @@
     <Compile Include="Data\NodeRMI.cs" />
     <Compile Include="Data\NodeVerifyResponse.cs" />
     <Compile Include="Data\SyncJob.cs" />
+    <Compile Include="Data\Wrapper.cs" />
     <Compile Include="Encryption\AES.cs" />
     <Compile Include="Encryption\StringMD5.cs" />
     <Compile Include="Enum\MessageIdentifier.cs" />
     <Compile Include="Exceptions\InvalidNodeTypeException.cs" />
     <Compile Include="Exceptions\NodeNotExistException.cs" />
+    <Compile Include="Exceptions\NodeRMITimeoutException.cs" />
     <Compile Include="Interfaces\IMatrixPortal.cs" />
     <Compile Include="Data\NodeInfo.cs" />
     <Compile Include="Interfaces\INode.cs" />
@@ -62,6 +64,7 @@
     <Compile Include="Interfaces\INodeController.cs" />
     <Compile Include="Interfaces\IControllerPortal.cs" />
     <Compile Include="Data\HostInfo.cs" />
+    <Compile Include="Util\BitShift.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

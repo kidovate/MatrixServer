@@ -1,4 +1,5 @@
 using System;
+using MatrixAPI.Data;
 using MatrixAPI.Interfaces;
 using MatrixMaster.Encryption;
 using MatrixMaster.Nodes;
@@ -30,6 +31,7 @@ namespace MatrixMaster
 
             INodeController controller = manager.InstantiateNodeController();
             hostInterface = new HostInterface(Settings.Default.Port, controller);
+            pool = new NodePool(hostInterface);
             hostInterface.Startup();
 
             nodeLibraryManager = new NodeLibraryManager("CompiledNodes");
@@ -38,7 +40,19 @@ namespace MatrixMaster
             host = new NodeHost("CompiledNodes");
             log.Debug("Test download uri: "+host.GetDownloadUrl("MMOController.dll"));
 
-            pool = new NodePool(hostInterface);
+            var controllerRmiType = manager.ControllerRMIType();
+            if(controllerRmiType == null)
+            {
+                log.Error("The node controller does not have an RMI interface! It will not function properly!");
+            }
+            else
+                pool.RegisterNode(new NodeInfo()
+                {
+                    HostID = new byte[1],
+                    Id = 0,
+                    RMITypeName = controllerRmiType.FullName,
+                    RMIResolvedType = controllerRmiType
+                });
 
             var webServer = NodeWebServer.Create(Settings.Default.HTTPPort);
             
