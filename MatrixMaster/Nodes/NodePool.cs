@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -7,6 +8,7 @@ using MatrixAPI.Data;
 using MatrixAPI.Enum;
 using MatrixAPI.Exceptions;
 using MatrixAPI.Interfaces;
+using MatrixAPI.Util;
 using MatrixMaster.Data;
 using MatrixMaster.Servers;
 using ProtoBuf;
@@ -14,19 +16,18 @@ using ProtoBuf;
 namespace MatrixMaster.Nodes
 {
     /// <summary>
-    /// The system's node pool contains all of the nodes and their identifying information.
+    /// The system's node pool contains all of the Nodes and their identifying information.
     /// </summary>
     public class NodePool
     {
-        Dictionary<int, NodeInfo> nodes = new Dictionary<int, NodeInfo>();
+        public ObservableCollection<NodeInfo> Nodes { get; private set; }
         public static NodePool Instance;
-        private HostInterface hostInter;
         Dictionary<int, NodeRMI> rmiResponses = new Dictionary<int, NodeRMI>(); 
 
         public NodePool(HostInterface hostInter)
         {
             Instance = this;
-            this.hostInter = hostInter;
+            Nodes = new ObservableCollection<NodeInfo>();
         }
 
         /// <summary>
@@ -35,9 +36,8 @@ namespace MatrixMaster.Nodes
         /// <param name="info"></param>
         public void RegisterNode(NodeInfo info)
         {
-            if (nodes.ContainsKey(info.Id)) throw new IndexOutOfRangeException("node already exists");
-
-            nodes.Add(info.Id, info);
+            if (NodeForId(info.Id) != null) throw new IndexOutOfRangeException("node already exists");
+            Nodes = new ObservableCollection<NodeInfo> {{info}};
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace MatrixMaster.Nodes
         /// <param name="info"></param>
         public void DestroyNode(NodeInfo info)
         {
-            nodes.Remove(info.Id);
+            Nodes.Remove(NodeForId(info.Id));
         }
 
         /// <summary>
@@ -56,8 +56,7 @@ namespace MatrixMaster.Nodes
         /// <returns></returns>
         public NodeInfo NodeForId(int id)
         {
-            if (!nodes.ContainsKey(id)) return null;
-            return nodes[id];
+            return Nodes.FirstOrDefault(e=>e.Id == id);
         }
 
         /// <summary>
@@ -67,7 +66,7 @@ namespace MatrixMaster.Nodes
         /// <returns></returns>
         public NodeInfo NodeForRMI<T>()
         {
-            return nodes.Values.FirstOrDefault(e => e.RMITypeName == typeof(T).FullName);
+            return Nodes.FirstOrDefault(e => e.RMITypeName == typeof(T).FullName);
         }
 
         /// <summary>
@@ -77,7 +76,7 @@ namespace MatrixMaster.Nodes
         /// <returns></returns>
         public bool CheckNodeExists(NodeInfo info)
         {
-            var node = nodes.Values.FirstOrDefault(e => e.Equals(info));
+            var node = Nodes.FirstOrDefault(e => e.Equals(info));
             return node != null;
         }
 
@@ -93,7 +92,7 @@ namespace MatrixMaster.Nodes
             var newInfo = new NodeInfo()
                               {HostID = theHost.Id, Id = new Random().Next(), RMITypeName = typeof (T).FullName, RMIResolvedType = typeof(T)};
             theHost.Nodes.Add(newInfo);
-            nodes.Add(newInfo.Id, newInfo);
+            Nodes.Add(newInfo);
             return newInfo;
         }
 
@@ -147,6 +146,20 @@ namespace MatrixMaster.Nodes
             var response = rmiResponses[rmi.RequestID];
             rmiResponses.Remove(rmi.RequestID);
             return response.DeserializeReturnValue();
+        }
+
+        public NodeInfo[] GetNodeList()
+        {
+            return Nodes.ToArray();
+        }
+
+        public void ShutdownNode(NodeInfo node)
+        {
+            var actualNode = NodeForId(node.Id);
+            if (actualNode == null) return;
+            var host = HostCache.FindHost(node.HostID);
+            if (host == null) return;
+            host.Nodes.Remove(actualNode);
         }
     }
 }

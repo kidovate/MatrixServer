@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Timers;
 using MatrixAPI.Data;
 using MatrixAPI.Encryption;
@@ -43,6 +44,8 @@ namespace MatrixHost.MasterInterface
         private byte[] keyHash;
 
         private Dictionary<int, bool> NodeExistsResponses = new Dictionary<int, bool>();
+
+        private Dictionary<int, NodeInfo> NodeDictionary = new Dictionary<int, NodeInfo>(); 
 
         public static HostClient Instance;
 
@@ -102,7 +105,7 @@ namespace MatrixHost.MasterInterface
             log.Debug("Connecting to server "+masterIp+":"+masterPort);
             bool connected = false;
             {
-                byte[] identity = new byte[1];
+                byte[] identity = new byte[15];
                 new Random().NextBytes(identity);
                 socket.Identity = identity;
                 var helloMessage = new[]{(byte)MessageIdentifier.Init};
@@ -222,6 +225,7 @@ namespace MatrixHost.MasterInterface
 
             log.Info("Connection and sync procedure complete, commencing operation.");
             heartbeat.Start();
+            RequestNodeList();
 
             while(status == 1)
             {
@@ -244,7 +248,16 @@ namespace MatrixHost.MasterInterface
                             ms.Write(data, 0, data.Length);
                             ms.Position = 0;
                             var nodeInfo = Serializer.Deserialize<NodeInfo>(ms);
-                            NodePool.Instance.LaunchNode(nodeInfo);
+                            Task.Factory.StartNew(()=>NodePool.Instance.LaunchNode(nodeInfo));
+                        }
+                        break;
+                    case MessageIdentifier.ShutdownNode:
+                        using (MemoryStream ms = new MemoryStream())
+                        {
+                            ms.Write(data, 0, data.Length);
+                            ms.Position = 0;
+                            var nodeInfo = Serializer.Deserialize<NodeInfo>(ms);
+                            Task.Factory.StartNew(()=>NodePool.Instance.ShutdownNode(nodeInfo));
                         }
                         break;
                     case MessageIdentifier.RMIInvoke:
@@ -255,13 +268,67 @@ namespace MatrixHost.MasterInterface
                             ms.Position = 0;
                             rmi = Serializer.Deserialize<NodeRMI>(ms);
                         }
-                        NodePool.Instance.AsyncProcessRMI(rmi);
+                        Task.Factory.StartNew(()=>NodePool.Instance.ProcessRMI(rmi));
+                        break;
+                    case MessageIdentifier.RMIResponse:
+                        NodeRMI rmir;
+                        using(MemoryStream ms = new MemoryStream())
+                        {
+                            ms.Write(data, 0, data.Length);
+                            ms.Position = 0;
+                            rmir = Serializer.Deserialize<NodeRMI>(ms);
+                        }
+                        NodePool.Instance.rmiResponses.Add(rmir.RequestID, rmir);
                         break;
                     case MessageIdentifier.Heartbeat:
                         heartbeatAttempts = 0;
                         break;
+                    case MessageIdentifier.ReqNodeList:
+                        NodeDictionary.Clear();
+                        using (MemoryStream ms = new MemoryStream())
+                        {
+                            ms.Write(data, 0, data.Length);
+                            ms.Position = 0;
+                            var nodeInfo = Serializer.Deserialize<NodeInfo[]>(ms);
+                            foreach(var info in nodeInfo)
+                            {
+                                info.RMIResolvedType =
+                                    NodeManager.Instance.GetHandlerForRMITypeName(info.RMITypeName).ComponentModel.Implementation;
+                                NodeDictionary.Add(info.Id, info);
+                            }
+                            log.Debug("Received node dictionary rebuild with "+nodeInfo.Length+" entries.");
+                        }
+                        break;
+                    case MessageIdentifier.NodeRemoved:
+                    case MessageIdentifier.NodeAdded:
+                        using(MemoryStream ms = new MemoryStream())
+                        {
+                            ms.Write(data, 0, data.Length);
+                            ms.Position = 0;
+                            var nodeInfo = Serializer.Deserialize<NodeInfo>(ms);
+                            if ((MessageIdentifier)msg.First.Buffer[0] == MessageIdentifier.NodeAdded)
+                            {
+                                nodeInfo.RMIResolvedType =
+                                    NodeManager.Instance.GetHandlerForRMITypeName(nodeInfo.RMITypeName).ComponentModel.Implementation;
+                                NodeDictionary.Add(nodeInfo.Id, nodeInfo);
+                            }
+                            else
+                                NodeDictionary.Remove(nodeInfo.Id);
+                        }
+                        break;
+                    default:
+                        log.Error("Unknown message received...");
+                        break;
                 }
             }
+        }
+
+        /// <summary>
+        /// Request a complete refresh of the node list.
+        /// </summary>
+        public void RequestNodeList()
+        {
+            socket.Send(BuildMessage(MessageIdentifier.ReqNodeList, null, true));
         }
 
         /// <summary>
@@ -357,6 +424,31 @@ namespace MatrixHost.MasterInterface
                 Serializer.Serialize(ms, rmi);
                 socket.Send(BuildMessage(MessageIdentifier.RMIResponse, ms.ToArray(), true));
             }
+        }
+
+        public void SendTo(object info, object buildMessage)
+        {
+            
+        }
+
+        public NodeInfo NodeForId(int nodeID)
+        {
+            return NodeDictionary[nodeID];
+        }
+
+        public void Send(byte[] message)
+        {
+            socket.Send(message);
+        }
+
+        public NodeInfo NodeForType<T>()
+        {
+            return NodeDictionary.Values.SingleOrDefault(e => e.RMITypeName == typeof (T).FullName);
+        }
+
+        public NodeInfo[] AllNodeForType<T>()
+        {
+            return NodeDictionary.Values.Where(e => e.RMITypeName == typeof (T).FullName).ToArray();
         }
     }
 }

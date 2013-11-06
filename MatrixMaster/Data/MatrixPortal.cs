@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using MatrixAPI.Data;
 using MatrixAPI.Exceptions;
 using MatrixAPI.Interfaces;
@@ -41,9 +42,9 @@ namespace MatrixMaster.Data
         /// <typeparam name="T"></typeparam>
         /// <param name="rmi"></param>
         /// <returns></returns>
-        public List<NodeInfo> GetNodeList<T>(T rmi)
+        public NodeInfo[] GetNodeList<T>(T rmi)
         {
-            throw new NotImplementedException();
+            return NodePool.Instance.GetNodeList().Where(e=>e.RMIResolvedType.FullName == typeof(T).FullName).ToArray();
         }
 
         internal void SetNodeID(int id)

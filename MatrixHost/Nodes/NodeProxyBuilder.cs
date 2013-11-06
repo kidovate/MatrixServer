@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Castle.DynamicProxy;
 using MatrixAPI.Data;
-using MatrixHost.MasterInterface;
 using log4net;
 
 namespace MatrixHost.Nodes
@@ -13,28 +9,42 @@ namespace MatrixHost.Nodes
     public static class NodeProxyBuilder
     {
         private static ProxyGenerator generator = new ProxyGenerator();
-        public static T GetProxyForRMI<T>(NodeInfo identifier)
+
+        public static T GetProxyForRMI<T>(NodeInfo identifier, int sourceNodeID)
         {
-            var proxy = generator.CreateInterfaceProxyWithoutTarget(typeof(T), new NodeProxyInterceptor(HostClient.Instance, identifier));
-            return (T) proxy;
+            var proxy = generator.CreateInterfaceProxyWithoutTarget(typeof(T), new NodeProxyInterceptor(NodePool.Instance, identifier, sourceNodeID));
+            return (T)proxy;
         }
     }
 
     public class NodeProxyInterceptor : IInterceptor
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(NodeProxyInterceptor));
-        private HostClient client;
+        private NodePool pool;
         private NodeInfo identifier;
-        
-        public NodeProxyInterceptor(HostClient clientInterface, NodeInfo identifier)
+        private int sourceNodeId;
+
+        public NodeProxyInterceptor(NodePool pool, NodeInfo identifier, int sourceNodeID)
         {
-            client = clientInterface;
+            this.pool = pool;
+            this.sourceNodeId = sourceNodeID;
             this.identifier = identifier;
         }
 
         public void Intercept(IInvocation invocation)
         {
-            log.Debug("Node RMI invocation request " + invocation.Method.Name);
+
+            //log.Debug("Node RMI invocation request " + invocation.Method.Name);
+            var rmi = new NodeRMI()
+            {
+                MethodName = invocation.Method.Name,
+                NodeID = identifier.Id,
+                RequestID = new Random().Next(),
+                ReturnValue = null,
+                SNodeID = sourceNodeId
+            };
+            rmi.SerializeArguments(invocation.Arguments);
+            invocation.ReturnValue = pool.BlockingRMIRequest(rmi);
         }
     }
 }

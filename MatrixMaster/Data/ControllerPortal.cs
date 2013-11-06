@@ -42,13 +42,13 @@ namespace MatrixMaster.Data
         /// <param name='node'>
         /// Identifier for the node.
         /// </param>
-        public bool ShutdownNode(NodeInfo node)
+        public void ShutdownNode(NodeInfo node)
         {
-            throw new NotImplementedException();
+            NodePool.Instance.ShutdownNode(node);
         }
 
         /// <summary>
-        /// Gets the nodes running on a host.
+        /// Gets the Nodes running on a host.
         /// </summary>
         /// <returns>
         /// Nodes running on specified host.
@@ -56,9 +56,9 @@ namespace MatrixMaster.Data
         /// <param name='host'>
         /// Identifier for host
         /// </param>
-        public List<NodeInfo> GetHostNodes(HostInfo host)
+        public NodeInfo[] GetHostNodes(HostInfo host)
         {
-            throw new NotImplementedException();
+            return HostCache.FindHost(host.Id).Nodes.ToArray();
         }
 
         internal void SetNodeID(int id)

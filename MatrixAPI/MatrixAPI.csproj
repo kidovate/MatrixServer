@@ -65,6 +65,8 @@
     <Compile Include="Interfaces\IControllerPortal.cs" />
     <Compile Include="Data\HostInfo.cs" />
     <Compile Include="Util\BitShift.cs" />
+    <Compile Include="Util\Extensions.cs" />
+    <Compile Include="Util\ObservableDictionary.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

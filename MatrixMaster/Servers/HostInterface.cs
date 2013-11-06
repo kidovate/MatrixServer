@@ -77,8 +77,8 @@ namespace MatrixMaster.Servers
                 var identity = message[0];
                 var data = message[1];
 
-                //Initial connection will be a single byte identity.
-                if(identity.BufferSize == 1)
+                //Initial connection will be a 15 byte identity.
+                if(identity.BufferSize == 15)
                 {
                     //This person has no identity. Check for hello message
                     if(data.Buffer[0] == (byte)MessageIdentifier.Init)
@@ -109,8 +109,11 @@ namespace MatrixMaster.Servers
                     if (hostIdentity == null)
                     {
                         log.Debug("Client contacted with invalid identity!");
-                        server.SendMore(identity.Buffer);
-                        server.Send(new byte[] {(byte) MessageIdentifier.InvalidIdentity});
+                        lock (server)
+                        {
+                            server.SendMore(identity.Buffer);
+                            server.Send(new byte[] {(byte) MessageIdentifier.InvalidIdentity});
+                        }
                     }else
                     {
                         hostIdentity.ProcessMessage(this, data.Buffer);
@@ -135,8 +138,11 @@ namespace MatrixMaster.Servers
         /// <param name="buildMessage">Message to send.</param>
         public void SendTo(HostInfo hostInfo, byte[] buildMessage)
         {
-            server.SendMore(hostInfo.Id);
-            server.Send(buildMessage);
+            lock (server)
+            {
+                server.SendMore(hostInfo.Id);
+                server.Send(buildMessage);
+            }
         }
 
         /// <summary>
@@ -146,7 +152,7 @@ namespace MatrixMaster.Servers
         public void DisconnectHost(HostInfo hostInfo)
         {
             HostCache.ConnectedHosts.Remove(hostInfo.Id);
-            //todo: node cache, remove the associated nodes
+            //todo: node cache, remove the associated Nodes
         }
 
         /// <summary>
@@ -155,11 +161,38 @@ namespace MatrixMaster.Servers
         /// <param name="rmi"></param>
         public void RouteRMIResponse(NodeRMI rmi)
         {
-            var targetHost = HostCache.FindHost(NodePool.Instance.NodeForId(rmi.SNodeID).HostID);
+            var target = NodePool.Instance.NodeForId(rmi.SNodeID);
+            if(target == null)
+            {
+                log.Debug("RMI response "+rmi.RequestID+" dropped as the initiator doesn't exist anymore.");
+                return;
+            }
+            var targetHost = HostCache.FindHost(target.HostID);
             using(MemoryStream ms = new MemoryStream())
             {
                 Serializer.Serialize(ms, rmi);
                 SendTo(targetHost.Info, targetHost.BuildMessage(MessageIdentifier.RMIResponse, ms.ToArray()));
+            }
+        }
+
+        /// <summary>
+        /// Route a RMI request to the host with the target node
+        /// </summary>
+        /// <param name="rmi"></param>
+        /// <param name="destoNode"> </param>
+        public void RouteRMIRequest(NodeRMI rmi, NodeInfo destoNode)
+        {
+            if(destoNode.HostID.Length == 1)
+            {
+                rmi.SerializeReturnValue(destoNode.RMIResolvedType.GetMethod(rmi.MethodName).Invoke(controller, rmi.DeserializeArguments()));
+                RouteRMIResponse(rmi);
+                return;
+            }
+            var destoHost = HostCache.FindHost(destoNode.HostID);
+            using (MemoryStream ms = new MemoryStream())
+            {
+                Serializer.Serialize(ms, rmi);
+                SendTo(destoHost.Info, destoHost.BuildMessage(MessageIdentifier.RMIInvoke, ms.ToArray()));
             }
         }
     }

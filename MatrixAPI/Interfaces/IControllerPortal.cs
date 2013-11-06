@@ -30,7 +30,7 @@ namespace MatrixAPI.Interfaces
 		/// <param name='node'>
 		/// Identifier for the node.
 		/// </param>
-		bool ShutdownNode(NodeInfo node);
+		void ShutdownNode(NodeInfo node);
 		
 		/// <summary>
 		/// Gets the nodes running on a host.
@@ -41,7 +41,7 @@ namespace MatrixAPI.Interfaces
 		/// <param name='host'>
 		/// Identifier for host
 		/// </param>
-		List<NodeInfo> GetHostNodes(HostInfo host);
+		NodeInfo[] GetHostNodes(HostInfo host);
 	}
 }
 

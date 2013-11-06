@@ -15,10 +15,11 @@ namespace MatrixHost.Portal
     /// </summary>
     public class MatrixPortal : IMatrixPortal
     {
-
+        private int nodeid;
         private HostClient clientInterface;
-        public MatrixPortal(HostClient clientInterface)
+        public MatrixPortal(HostClient clientInterface, int nodeid)
         {
+            this.nodeid = nodeid;
             this.clientInterface = clientInterface;
         }
         /// <summary>
@@ -35,17 +36,19 @@ namespace MatrixHost.Portal
             bool isValid = clientInterface.AsyncNodeVerify(typeof(T), identifier);
             if(!isValid) throw new InvalidNodeTypeException();
 
-            return NodeProxyBuilder.GetProxyForRMI<T>(identifier);
+            return NodeProxyBuilder.GetProxyForRMI<T>(identifier, nodeid);
         }
 
         /// <summary>
-        /// Retrieve a proxied node RMI with lowest load
+        /// Retrieve a proxied node RMI
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         public T GetNodeProxy<T>()
         {
-            throw new NotImplementedException();
+            var identifier = clientInterface.NodeForType<T>();
+            if(identifier == null) throw new NodeNotExistException();
+            return NodeProxyBuilder.GetProxyForRMI<T>(identifier, nodeid);
         }
 
         /// <summary>
@@ -54,9 +57,9 @@ namespace MatrixHost.Portal
         /// <typeparam name="T"></typeparam>
         /// <param name="rmi"></param>
         /// <returns></returns>
-        public List<NodeInfo> GetNodeList<T>(T rmi)
+        public NodeInfo[] GetNodeList<T>(T rmi)
         {
-            throw new NotImplementedException();
+            return clientInterface.AllNodeForType<T>();
         }
     }
 }

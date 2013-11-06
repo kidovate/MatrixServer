@@ -78,6 +78,26 @@
         /// <summary>
         /// Simple heartbeat
         /// </summary>
-        Heartbeat
+        Heartbeat,
+
+        /// <summary>
+        /// Request a full download of the node list.
+        /// </summary>
+        ReqNodeList,
+
+        /// <summary>
+        /// When a node is added, this will send out the new NodeInfo
+        /// </summary>
+        NodeAdded,
+
+        /// <summary>
+        /// When a node is removed, this will send out the old NodeInfo
+        /// </summary>
+        NodeRemoved,
+
+        /// <summary>
+        /// Shut down a node running on that host.
+        /// </summary>
+        ShutdownNode
     }
 }

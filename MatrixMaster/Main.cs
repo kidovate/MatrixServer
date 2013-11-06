@@ -30,6 +30,12 @@ namespace MatrixMaster
             manager.LogLoadedModules();
 
             INodeController controller = manager.InstantiateNodeController();
+            if(controller == null)
+            {
+                log.Error("No INodeController found, the server will not do anything! Exiting...");
+                manager.Shutdown();
+                return;
+            }
             hostInterface = new HostInterface(Settings.Default.Port, controller);
             pool = new NodePool(hostInterface);
             hostInterface.Startup();

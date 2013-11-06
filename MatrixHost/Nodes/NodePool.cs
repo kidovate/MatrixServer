@@ -1,11 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using MatrixAPI.Data;
+using MatrixAPI.Enum;
+using MatrixAPI.Exceptions;
 using MatrixAPI.Interfaces;
+using MatrixAPI.Util;
 using MatrixHost.MasterInterface;
+using MatrixHost.Portal;
+using ProtoBuf;
 
 namespace MatrixHost.Nodes
 {
@@ -13,12 +17,13 @@ namespace MatrixHost.Nodes
     {
         public static NodePool Instance;
 
-        private Dictionary<NodeInfo, INode> nodes; 
-
+        public Dictionary<NodeInfo, INode> Nodes { get; private set; }
+        public Dictionary<int, NodeRMI> rmiResponses; 
         public NodePool()
         {
             Instance = this;
-            nodes = new Dictionary<NodeInfo, INode>();
+            Nodes = new Dictionary<NodeInfo, INode>();
+            rmiResponses = new Dictionary<int, NodeRMI>();
         }
 
         /// <summary>
@@ -28,21 +33,15 @@ namespace MatrixHost.Nodes
         public void LaunchNode(NodeInfo info)
         {
             var instance = NodeManager.Instance.CreateInstance(info);
-            nodes.Add(info, instance);
+            instance.Initialize(new MatrixPortal(HostClient.Instance, info.Id));
+            Nodes.Add(info, instance);
         }
 
-        public void AsyncProcessRMI(NodeRMI rmi)
+        public void ProcessRMI(NodeRMI rmi)
         {
-            //Spawn a new thread
-            ThreadPool.QueueUserWorkItem(ProcessRMI, rmi);
-        }
-
-        public void ProcessRMI(object ormi)
-        {
-            var rmi = (NodeRMI) ormi;
-            var nodeInstance = nodes.Keys.FirstOrDefault(e => e.Id == rmi.NodeID);
+            var nodeInstance = Nodes.Keys.FirstOrDefault(e => e.Id == rmi.NodeID);
             if (nodeInstance == null) return;
-            var instance = nodes[nodeInstance];
+            var instance = Nodes[nodeInstance];
             //Find the method
             var method = nodeInstance.RMIResolvedType.GetMethod(rmi.MethodName);
             var result = method.Invoke(instance, rmi.DeserializeArguments());
@@ -50,6 +49,41 @@ namespace MatrixHost.Nodes
 
             rmi.SerializeReturnValue(result);
             HostClient.Instance.ProcessRMIResponse(rmi);
+        }
+
+        public void ShutdownNode(NodeInfo nodeInfo)
+        {
+            var nodeInstance = Nodes.Keys.FirstOrDefault(e => e.Id == nodeInfo.Id);
+            if (nodeInstance == null) return;
+            var instance = Nodes[nodeInstance];
+            instance.Shutdown();
+            Nodes.Remove(nodeInstance);
+        }
+
+        public object BlockingRMIRequest(NodeRMI rmi)
+        {
+            //Find the target node
+            var targetNode = HostClient.Instance.NodeForId(rmi.NodeID);
+            if (targetNode == null) throw new NodeNotExistException();
+            using (var ms = new MemoryStream())
+            {
+                Serializer.Serialize(ms, rmi);
+                HostClient.Instance.Send(HostClient.Instance.BuildMessage(MessageIdentifier.RMIInvoke, ms.ToArray(), true));
+            }
+            var returnType = targetNode.RMIResolvedType.GetMethod(rmi.MethodName).ReturnType;
+            if (returnType == typeof(void)) return null;
+            //Wait for a response
+            int time = 0;
+            while (!rmiResponses.ContainsKey(rmi.RequestID))
+            {
+                Thread.Sleep(50);
+                time++;
+                if (time > 400)
+                    throw new NodeRMITimeoutException();
+            }
+            var response = rmiResponses[rmi.RequestID];
+            rmiResponses.Remove(rmi.RequestID);
+            return response.DeserializeReturnValue();
         }
     }
 }

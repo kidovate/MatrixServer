@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using MatrixAPI.Interfaces;
 using log4net;
 
@@ -19,11 +20,23 @@ namespace MMOController
 			log.Debug("Initializing login node..");
 
             log.Debug("Login node initialized.");
+		    Task.Factory.StartNew(() =>
+		                              {
+		                                  log.Debug("Attempting test RMI");
+		                                  try
+		                                  {
+		                                      var proxy = portal.GetNodeProxy<IMMOCluster>();
+		                                      log.Debug("Response: " + proxy.TestString(5));
+		                                  }
+		                                  catch (Exception ex)
+		                                  {
+		                                      log.Error("Exception while testing RMI: " + ex.Message);
+		                                  }
+		                              });
 		}
 		
 		public void Shutdown(){
 			log.Info("Login node shutting down..");
-		
 		}
 
 	    /// <summary>

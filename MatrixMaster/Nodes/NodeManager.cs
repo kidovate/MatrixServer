@@ -8,6 +8,7 @@ using Castle.Windsor.Proxy;
 using System.IO;
 using System.Reflection;
 using MatrixAPI.Interfaces;
+using MatrixAPI.Util;
 using log4net;
 
 namespace MatrixMaster
@@ -81,9 +82,10 @@ namespace MatrixMaster
         {
             var handlers = container.Kernel.GetHandlers(typeof(INodeController));
             if (handlers.Length == 0) return null;
+            var topLevelInterfaces = handlers[0].ComponentModel.Implementation.GetTopLevelInterfaces();
             return
-                handlers[0].ComponentModel.Implementation.GetInterfaces().FirstOrDefault(
-                    e => e.IsAssignableFrom(typeof (IRMIInterface)));
+                topLevelInterfaces.FirstOrDefault(
+                    e => e.GetInterfaces().Contains(typeof (IRMIInterface)));
         }
     }
 }

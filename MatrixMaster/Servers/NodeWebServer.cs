@@ -11,7 +11,7 @@ using log4net;
 namespace MatrixMaster.Servers
 {
     /// <summary>
-    /// Hosts the nodes for download.
+    /// Hosts the Nodes for download.
     /// </summary>
     public class NodeWebServer : IServiceFactory
     {

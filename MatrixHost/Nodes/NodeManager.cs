@@ -1,4 +1,5 @@
 using System.Linq;
+using Castle.MicroKernel;
 using Castle.MicroKernel.Context;
 using Castle.Windsor;
 using System.IO;
@@ -78,11 +79,16 @@ namespace MatrixHost.Nodes
         /// <returns></returns>
         public INode CreateInstance(NodeInfo info)
         {
-            var handler = container.Kernel.GetHandlers(typeof (INode)).SingleOrDefault(e=>e.ComponentModel.Implementation.GetInterfaces().SingleOrDefault(f=>f.FullName == info.RMITypeName) != null);
+            var handler = GetHandlerForRMITypeName(info.RMITypeName);
             if (handler == null){ log.Debug("Cannot find an instance for "+info.RMITypeName);return null;}
-            log.Debug("Launching a new instance: [RMI] "+info.RMITypeName+" [IMPL] "+handler.ComponentModel.Implementation.FullName);
             info.RMIResolvedType = handler.ComponentModel.Implementation;
+            log.Debug("Launching a new instance: [RMI] "+info.RMITypeName+" [IMPL] "+handler.ComponentModel.Implementation.FullName);
             return (INode)handler.Resolve(CreationContext.CreateEmpty());
+        }
+
+        public IHandler GetHandlerForRMITypeName(string name)
+        {
+            return container.Kernel.GetHandlers(typeof(INode)).Concat(container.Kernel.GetHandlers(typeof(INodeController))).SingleOrDefault(e => e.ComponentModel.Implementation.GetInterfaces().SingleOrDefault(f => f.FullName == name) != null);
         }
 
         public void Shutdown()

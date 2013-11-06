@@ -36,7 +36,7 @@ namespace MatrixMaster.Enums
         LoadingNodes = 5,
 		
         /// <summary>
-        /// Ready to launch nodes.
+        /// Ready to launch Nodes.
         /// </summary>
         Operating = 5
     }

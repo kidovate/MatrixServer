@@ -8,6 +8,6 @@ namespace MMOController
 {
     public interface IMMOCluster : IRMIInterface
     {
-
+        string TestString(int value);
     }
 }
