@@ -88,9 +88,17 @@ namespace MatrixMaster.Nodes
         {
             var hosts = HostCache.ConnectedHosts.Where(e => e.Value.Nodes.SingleOrDefault(x=>x.RMITypeName == typeof(T).FullName) == null).ToArray();
             if (hosts.Length == 0) return null;
-            Host theHost = hosts[0].Value;
-            var newInfo = new NodeInfo()
-                              {HostID = theHost.Id, Id = new Random().Next(), RMITypeName = typeof (T).FullName, RMIResolvedType = typeof(T)};
+            return LaunchNode<T>(hosts[0].Value.Info);
+        }
+
+        /// <summary>
+        /// Launch a node on a specific server.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        public NodeInfo LaunchNode<T>(HostInfo host)
+        {
+            var theHost = HostCache.FindHost(host.Id);
+            var newInfo = new NodeInfo() { HostID = theHost.Id, Id = new Random().Next(), RMITypeName = typeof(T).FullName, RMIResolvedType = typeof(T) };
             theHost.Nodes.Add(newInfo);
             Nodes.Add(newInfo);
             return newInfo;

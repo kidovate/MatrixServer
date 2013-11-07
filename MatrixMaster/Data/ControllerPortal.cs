@@ -34,6 +34,19 @@ namespace MatrixMaster.Data
         }
 
         /// <summary>
+        /// Launch a new node in the cluster.
+        /// </summary>
+        /// <typeparam name="T">RMI type of node to launch.</typeparam>
+        /// <param name="host">Host to launch the node on.</param>
+        /// <returns></returns>
+        public NodeInfo LaunchNode<T>(HostInfo host)
+        {
+            log.Debug("Launching a new node with type "+typeof(T).FullName);
+
+            return NodePool.Instance.LaunchNode<T>(host);
+        }
+
+        /// <summary>
         /// Shuts down a node identified by NodeInfo
         /// </summary>
         /// <returns>

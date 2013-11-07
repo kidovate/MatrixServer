@@ -20,6 +20,14 @@ namespace MatrixAPI.Interfaces
 		/// Node type to launch in the cluster.
 		/// </param>
 		NodeInfo LaunchNode<T>();
+
+        /// <summary>
+        /// Launch a new node in the cluster.
+        /// </summary>
+        /// <typeparam name="T">RMI type of node to launch.</typeparam>
+        /// <param name="host">Host to launch the node on.</param>
+        /// <returns></returns>
+	    NodeInfo LaunchNode<T>(HostInfo host);
 		
 		/// <summary>
 		/// Shuts down a node identified by NodeInfo

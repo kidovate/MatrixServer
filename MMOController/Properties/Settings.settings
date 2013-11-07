@@ -1,0 +1,24 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="MMOController.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="AWSAccessKey" Type="System.String" Scope="User">
+      <Value Profile="(Default)">AKIAIVMW2EXR73KVKM3A</Value>
+    </Setting>
+    <Setting Name="AWSSecretKey" Type="System.String" Scope="User">
+      <Value Profile="(Default)">j98q4kxr/4l+ZJWnVpi6Atl2Z961wO+7Z9YEtWXN</Value>
+    </Setting>
+    <Setting Name="LauncherInterfacePort" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">8081</Value>
+    </Setting>
+    <Setting Name="GameInterfacePort" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">8082</Value>
+    </Setting>
+    <Setting Name="BucketName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">omunionline</Value>
+    </Setting>
+    <Setting Name="FolderName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">GameDistro</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

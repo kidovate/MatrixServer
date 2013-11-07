@@ -6,8 +6,10 @@ using MatrixAPI.Interfaces;
 
 namespace MMOController
 {
-    public interface IMMOCluster : IRMIInterface
+    /// <summary>
+    /// A RMI interface for a node.
+    /// </summary>
+    public interface ILoginNode : IRMIInterface
     {
-        string TestString(int value);
     }
 }

@@ -69,6 +69,8 @@ namespace MatrixMaster.Data
                                          log.Info("Host timed out, terminating");
                                          status = HostStatus.Disconnected;
                                          lastInter.DisconnectHost(hostInfo);
+                                         heartbeat.Stop();
+                                         heartbeat.Dispose();
                                      };
             NodePool.Instance.Nodes.CollectionChanged += OnGlobalNodesChange;
             _nodes = new ObservableCollection<NodeInfo>();
