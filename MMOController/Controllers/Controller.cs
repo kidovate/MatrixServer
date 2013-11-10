@@ -1,4 +1,5 @@
 using System;
+using MMOController.Interfaces;
 using MatrixAPI.Interfaces;
 using MatrixAPI;
 using MatrixAPI.Data;
@@ -27,6 +28,11 @@ namespace MMOController
 		public void OnHostAdded (MatrixAPI.Data.HostInfo newHost)
 		{
 		    matrixPortal.LaunchNode<ILoginNode>(newHost);
+		    matrixPortal.LaunchNode<ILauncherNode>(newHost);
+
+		    var proxy = matrixPortal.GetNodeProxy<ILoginNode>(matrixPortal.LaunchNode<ILoginNode>(newHost));
+
+		    proxy.TestMethod("testing");
 		}
 		#endregion
 	}

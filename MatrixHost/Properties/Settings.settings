@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="MasterIP" Type="System.String" Scope="User">
-      <Value Profile="(Default)">127.0.0.1</Value>
+      <Value Profile="(Default)">142.129.179.196</Value>
     </Setting>
     <Setting Name="MasterPort" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">6560</Value>

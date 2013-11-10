@@ -47,6 +47,7 @@
     <Reference Include="Castle.Windsor">
       <HintPath>..\lib\Castle.Windsor.dll</HintPath>
     </Reference>
+    <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />

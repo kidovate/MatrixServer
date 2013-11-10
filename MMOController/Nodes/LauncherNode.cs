@@ -2,20 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 using Amazon.S3.Model;
-using Griffin.Networking.Buffers;
-using Griffin.Networking.Messaging;
-using Griffin.Networking.Protocol.Http;
-using Griffin.Networking.Servers;
-using MMOController.Data;
 using MMOController.Enum;
 using MMOController.Interfaces;
 using MMOController.Properties;
 using MatrixAPI.Data;
-using MatrixAPI.Enum;
 using MatrixAPI.Interfaces;
 using ProtoBuf;
 using ZeroMQ;
@@ -88,6 +80,9 @@ namespace MMOController.Nodes
                         }
                         server.Send(data);
                         break;
+                    case LauncherMessageIdentifier.Ping:
+                        server.Send(message.First.Buffer);
+                        break;
                     default:
                         server.Send(new byte[] {(byte) LauncherMessageIdentifier.UnknownMessage});
                         break;
@@ -119,14 +114,14 @@ namespace MMOController.Nodes
 
             foreach(var file in fileIndex)
             {
-                if(!index.ContainsKey(file.Key) || index[file.Key].SequenceEqual(file.Value))
+                if(!index.ContainsKey(file.Key) || !index[file.Key].SequenceEqual(file.Value))
                 {
                     var downloadUrl =
                         MmoAws.AmazonS3.GetPreSignedURL(new GetPreSignedUrlRequest()
                                                             {
                                                                 BucketName = Settings.Default.BucketName,
                                                                 Key = Settings.Default.FolderName + "/" + file.Key,
-                                                                Expires = DateTime.Now.AddDays(1)
+                                                                Expires = DateTime.Now.AddHours(3)
                                                             });
                     result.filesToDownload.Add(file.Key+"|"+downloadUrl);
                 }

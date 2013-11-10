@@ -34,6 +34,7 @@ namespace MatrixMaster
             {
                 log.Error("No INodeController found, the server will not do anything! Exiting...");
                 manager.Shutdown();
+                Console.ReadLine();
                 return;
             }
             hostInterface = new HostInterface(Settings.Default.Port, controller);

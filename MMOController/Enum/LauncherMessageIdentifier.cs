@@ -14,6 +14,7 @@ namespace MMOController.Enum
         /// Get a sync job with the md5 file index.
         /// </summary>
         GetSyncJob,
+        Ping,
         UnknownMessage
     }
 }
