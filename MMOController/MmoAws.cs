@@ -16,7 +16,7 @@ namespace MMOController
     public static class MmoAws
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(MmoAws));
-        public static AmazonS3 AmazonS3 { get; private set; }
+		public static IAmazonS3 AmazonS3 { get; private set; }
         private static bool initialized = false;
         
         static MmoAws()

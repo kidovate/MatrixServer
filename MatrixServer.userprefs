@@ -1,13 +1,9 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="MatrixMaster/Data/Host.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="MMOController/Nodes/LauncherNode.cs">
     <Files>
-      <File FileName="MatrixMaster/Servers/HostInterface.cs" Line="65" Column="14" />
-      <File FileName="MatrixHost/Nodes/NodeInstaller.cs" Line="7" Column="27" />
-      <File FileName="MatrixHost/Nodes/NodeManager.cs" Line="36" Column="31" />
-      <File FileName="MatrixHost/Nodes/NodeLibraryManager.cs" Line="6" Column="50" />
-      <File FileName="MatrixMaster/Data/Host.cs" Line="72" Column="45" />
-      <File FileName="MatrixMaster/Enums/HostStatus.cs" Line="31" Column="17" />
+      <File FileName="MMOController/Nodes/LauncherNode.cs" Line="65" Column="5" />
+      <File FileName="MMOController/MmoAws.cs" Line="19" Column="62" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

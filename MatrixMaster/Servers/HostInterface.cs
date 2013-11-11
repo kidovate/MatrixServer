@@ -62,7 +62,8 @@ namespace MatrixMaster.Servers
         }
 
         /// <summary>
-        /// Blocking thread to receive and process data.
+        /// B
+        /// locking thread to receive and process data.
         /// </summary>
         public void ServerThread()
         {

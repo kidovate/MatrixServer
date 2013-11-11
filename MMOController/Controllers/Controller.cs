@@ -29,10 +29,6 @@ namespace MMOController
 		{
 		    matrixPortal.LaunchNode<ILoginNode>(newHost);
 		    matrixPortal.LaunchNode<ILauncherNode>(newHost);
-
-		    var proxy = matrixPortal.GetNodeProxy<ILoginNode>(matrixPortal.LaunchNode<ILoginNode>(newHost));
-
-		    proxy.TestMethod("testing");
 		}
 		#endregion
 	}

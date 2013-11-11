@@ -1,4 +1,5 @@
-/home/kidovate/MatrixServer/MatrixMaster/bin/Debug/MatrixMaster.exe.mdb
-/home/kidovate/MatrixServer/MatrixMaster/bin/Debug/MatrixMaster.exe
-/home/kidovate/MatrixServer/MatrixMaster/obj/x86/Debug/MatrixMaster.exe
-/home/kidovate/MatrixServer/MatrixMaster/obj/x86/Debug/MatrixMaster.exe.mdb
+/home/kidovate/Documents/matrixserver/MatrixMaster/bin/Debug/MatrixMaster.exe.config
+/home/kidovate/Documents/matrixserver/MatrixMaster/bin/Debug/MatrixMaster.exe.mdb
+/home/kidovate/Documents/matrixserver/MatrixMaster/bin/Debug/MatrixMaster.exe
+/home/kidovate/Documents/matrixserver/MatrixMaster/obj/x86/Debug/MatrixMaster.exe
+/home/kidovate/Documents/matrixserver/MatrixMaster/obj/x86/Debug/MatrixMaster.exe.mdb
