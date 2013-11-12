@@ -46,13 +46,13 @@ namespace MatrixMaster.Properties {
                 this["HTTPPort"] = value;
             }
         }
-
+        
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("udp")]
-        public int Protocol {
+        [global::System.Configuration.DefaultSettingValueAttribute("tcp")]
+        public string Protocol {
             get {
-                return ((int)(this["Protocol"]));
+                return ((string)(this["Protocol"]));
             }
             set {
                 this["Protocol"] = value;

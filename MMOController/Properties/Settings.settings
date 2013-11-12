@@ -21,7 +21,7 @@
       <Value Profile="(Default)">GameDistro</Value>
     </Setting>
     <Setting Name="Protocol" Type="System.String" Scope="User">
-      <Value Profile="(Default)">udp</Value>
+      <Value Profile="(Default)">tcp</Value>
     </Setting>
   </Settings>
 </SettingsFile>

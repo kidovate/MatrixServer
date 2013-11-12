@@ -73,8 +73,9 @@ namespace MatrixMaster.Servers
             while(status == 1)
             {
 
-                var message = server.ReceiveMessage();
-                
+                var message = server.ReceiveMessage(TimeSpan.FromMilliseconds(500));
+                if (message.FrameCount == 0) continue;
+
                 //Determine the identity of the host
                 var identity = message[0];
                 var data = message[1];
@@ -129,8 +130,6 @@ namespace MatrixMaster.Servers
         public void Shutdown()
         {
             status = 0;
-            serverThread.Abort();
-            server.Unbind("tcp://*:" + port);
         }
 
         /// <summary>

@@ -8,8 +8,8 @@
     <Setting Name="HTTPPort" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">8080</Value>
     </Setting>
-	<Setting Name="Protocol" Type="System.String" Scope="User">
-      <Value Profile="(Default)">udp</Value>
+    <Setting Name="Protocol" Type="System.String" Scope="User">
+      <Value Profile="(Default)">tcp</Value>
     </Setting>
   </Settings>
 </SettingsFile>

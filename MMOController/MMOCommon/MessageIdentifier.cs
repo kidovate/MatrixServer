@@ -77,7 +77,12 @@ namespace MMOCommon
 		/// <summary>
 		/// Simple heartbeat. Server expects a 10 second heartbeat.
 		/// </summary>
-		Heartbeat
+		Heartbeat,
+        
+        /// <summary>
+        /// Invalid identity
+        /// </summary>
+	    InvalidIdentity
 	}
 }
 

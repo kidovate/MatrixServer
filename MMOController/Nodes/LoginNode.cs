@@ -1,9 +1,13 @@
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Amazon.S3.Model;
+using MMOController.Data;
 using MMOController.Properties;
 using MatrixAPI.Interfaces;
+using ProtoBuf;
 using log4net;
 using ZeroMQ;
 using MatrixAPI.Data;
@@ -57,14 +61,14 @@ namespace MMOController
 						response[0] = (byte)MessageIdentifier.SetIdentity;
 						log.Debug("Assigned new client a 27 byte identity.");
 						//Setup a client object for this.
-						var client = new Client();
-						HostCache.RegisterHost(host);
-						host.Id.CopyTo(response, 1);
+						var client = new Client(this);
+						ClientCache.RegisterClient(client);
+						client.Id.CopyTo(response, 1);
 						server.SendMore(identity.Buffer);
 						server.Send(response);
 					}else
 					{
-						log.Debug("Client with 1 byte identity, message "+Enum.GetName(typeof(MessageIdentifier), data.Buffer[0]));
+						log.Debug("Client with 1 byte identity, message "+System.Enum.GetName(typeof(MessageIdentifier), data.Buffer[0]));
 					}
 
 				}else if(identity.BufferSize == 0)
@@ -74,7 +78,7 @@ namespace MMOController
 				else
 				{
 					//Find the host object.
-					var hostIdentity = HostCache.FindHost(identity.Buffer);
+					var hostIdentity = ClientCache.FindClient(identity.Buffer);
 					if (hostIdentity == null)
 					{
 						log.Debug("Client contacted with invalid identity!");
@@ -85,50 +89,13 @@ namespace MMOController
 						}
 					}else
 					{
-						hostIdentity.ProcessMessage(this, data.Buffer);
+						hostIdentity.ProcessMessage(data.Buffer);
 					}
 
 				}
 			}
-			server.Unbind(Settings.Default.Protocol+"://*:"+port);
+			server.Unbind(Settings.Default.Protocol+"://*:"+Settings.Default.GameInterfacePort);
 			log.Info("Game handler shut down.");
-		}
-
-		private SyncJob CreateJob(byte[] toArray)
-		{
-			Dictionary<string, byte[]> index;
-			using(MemoryStream ms = new MemoryStream())
-			{
-				ms.Write(toArray, 0, toArray.Length);
-				ms.Position = 0;
-				index = Serializer.Deserialize<Dictionary<string, byte[]>>(ms);
-			}
-
-			SyncJob result = new SyncJob();
-			result.filesToDelete = new List<string>();
-			result.filesToDownload = new List<string>();
-
-			foreach(var file in index.Keys)
-			{
-				if(!fileIndex.ContainsKey(file)) result.filesToDelete.Add(file);
-			}
-
-			foreach(var file in fileIndex)
-			{
-				if(!index.ContainsKey(file.Key) || !index[file.Key].SequenceEqual(file.Value))
-				{
-					var downloadUrl =
-						MmoAws.AmazonS3.GetPreSignedURL(new GetPreSignedUrlRequest()
-							{
-								BucketName = Settings.Default.BucketName,
-								Key = Settings.Default.FolderName + "/" + file.Key,
-								Expires = DateTime.Now.AddHours(3)
-							});
-					result.filesToDownload.Add(file.Key+"|"+downloadUrl);
-				}
-			}
-
-			return result;
 		}
 
 		/// <summary>
@@ -138,6 +105,17 @@ namespace MMOController
 		{
 			status = 0;
 		}
+
+        /// <summary>
+        /// Sets a client as disconnected. NOT to be used to kill a client.
+        /// </summary>
+        /// <param name="clientInfo"></param>
+	    public void Disconnect(ClientInfo clientInfo)
+        {
+            var client = ClientCache.FindClient(clientInfo.Id);
+            if (client == null) return;
+            ClientCache.ConnectedClients.Remove(client.Id);
+        }
 	}
 }
 

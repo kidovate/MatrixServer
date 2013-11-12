@@ -307,12 +307,12 @@ namespace MatrixHost.MasterInterface
                             ms.Write(data, 0, data.Length);
                             ms.Position = 0;
                             var nodeInfo = Serializer.Deserialize<NodeInfo>(ms);
+                            
                             if ((MessageIdentifier)msg.First.Buffer[0] == MessageIdentifier.NodeAdded)
                             {
+                                if (NodeDictionary.ContainsKey(nodeInfo.Id)) break;
                                 nodeInfo.RMIResolvedType =
-                                    NodeManager.Instance.GetHandlerForRMITypeName(nodeInfo.RMITypeName).ComponentModel.Implementation;
-                                NodeDictionary.Add(nodeInfo.Id, nodeInfo);
-                            }
+                                    NodeManager.Instance.GetHandlerForRMITypeName(nodeInfo.RMITypeName).ComponentModel.Implementation;                            }
                             else
                                 NodeDictionary.Remove(nodeInfo.Id);
                         }
