@@ -14,6 +14,7 @@ using MatrixHost.Nodes;
 using ProtoBuf;
 using ZeroMQ;
 using log4net;
+using MatrixHost.Properties;
 
 namespace MatrixHost.MasterInterface
 {
@@ -110,7 +111,7 @@ namespace MatrixHost.MasterInterface
                 socket.Identity = identity;
                 var helloMessage = new[]{(byte)MessageIdentifier.Init};
                 int attempt = 1;
-                var endpoint = "tcp://" + masterIp + ":" + masterPort;
+				var endpoint = Settings.Default.Protocol+"://" + masterIp + ":" + masterPort;
                 socket.Connect(endpoint);
                 while (!connected)
                 {
@@ -321,6 +322,8 @@ namespace MatrixHost.MasterInterface
                         break;
                 }
             }
+
+			socket.Disconnect(Settings.Default.Protocol+"://"+Settings.Default.MasterIP+":"+Settings.Default.MasterPort);
         }
 
         /// <summary>

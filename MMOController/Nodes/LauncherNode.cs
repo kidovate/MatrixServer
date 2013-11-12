@@ -20,7 +20,6 @@ namespace MMOController.Nodes
     /// </summary>
     public class LauncherNode : INode, ILauncherNode
     {
-        private ZmqContext context;
         private ZmqSocket server;
         private static readonly ILog log = LogManager.GetLogger(typeof(LauncherNode));
         private Dictionary<string, byte[]> fileIndex; 
@@ -48,8 +47,7 @@ namespace MMOController.Nodes
             }
 
             log.Debug("Binding the server to port "+Settings.Default.LauncherInterfacePort);
-            context = ZmqContext.Create();
-            server = context.CreateSocket(SocketType.REP);
+			server = MmoZmq.context.CreateSocket(SocketType.REP);
 
             status = 1;
             serverTask = Task.Factory.StartNew(ServerThread);
@@ -57,13 +55,13 @@ namespace MMOController.Nodes
 
         void ServerThread()
         {
-            server.Bind("tcp://*:" + Settings.Default.LauncherInterfacePort);
+			server.Bind(Settings.Default.Protocol+"://*:" + Settings.Default.LauncherInterfacePort);
             while(status == 1)
             {
                 var message = server.ReceiveMessage(TimeSpan.FromMilliseconds(500));
                 if (message.FrameCount == 0) continue;
 
-                log.Debug("Processing launcher request: " + System.Enum.GetName(typeof(LauncherMessageIdentifier), message[0].Buffer[0]));
+				//log.Debug("Processing request: " + System.Enum.GetName(typeof(LauncherMessageIdentifier), message[0].Buffer[0]));
 
                 switch((LauncherMessageIdentifier)message[0].Buffer[0])
                 {
@@ -89,7 +87,7 @@ namespace MMOController.Nodes
                 }
 
             }
-            server.Unbind("tcp://*:"+Settings.Default.LauncherInterfacePort);
+			server.Unbind(Settings.Default.Protocol+"://*:"+Settings.Default.LauncherInterfacePort);
             log.Info("Launcher server shut down.");
         }
 

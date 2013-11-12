@@ -20,5 +20,8 @@
     <Setting Name="FolderName" Type="System.String" Scope="User">
       <Value Profile="(Default)">GameDistro</Value>
     </Setting>
+    <Setting Name="Protocol" Type="System.String" Scope="User">
+      <Value Profile="(Default)">udp</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

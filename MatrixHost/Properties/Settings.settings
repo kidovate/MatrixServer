@@ -11,5 +11,8 @@
     <Setting Name="KeyFile" Type="System.String" Scope="User">
       <Value Profile="(Default)">EncryptionKey.mek</Value>
     </Setting>
+    <Setting Name="Protocol" Type="System.String" Scope="User">
+      <Value Profile="(Default)">udp</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

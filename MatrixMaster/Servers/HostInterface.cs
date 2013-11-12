@@ -9,6 +9,7 @@ using MatrixMaster.Nodes;
 using ProtoBuf;
 using ZeroMQ;
 using log4net;
+using MatrixMaster.Properties;
 
 namespace MatrixMaster.Servers
 {
@@ -56,7 +57,7 @@ namespace MatrixMaster.Servers
         /// </summary>
         public void Startup()
         {
-            server.Bind("tcp://*:"+port);
+			server.Bind(Settings.Default.Protocol+"://*:"+port);
             serverThread = new Thread(ServerThread);
             serverThread.Start();
         }
@@ -122,7 +123,7 @@ namespace MatrixMaster.Servers
 
                 }
             }
-            server.Unbind("tcp://*:"+port);
+			server.Unbind(Settings.Default.Protocol+"://*:"+port);
         }
 
         public void Shutdown()

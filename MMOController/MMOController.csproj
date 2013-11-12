@@ -63,12 +63,20 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="MmoZmq.cs" />
+    <Compile Include="Data\Client.cs" />
+    <Compile Include="Data\ClientInfo.cs" />
+    <Compile Include="Enum\ClientStatus.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <ProjectReference Include="..\MatrixAPI\MatrixAPI.csproj">
       <Project>{97058C73-FA1B-4AA8-B1A1-3B842448689F}</Project>
       <Name>MatrixAPI</Name>
+    </ProjectReference>
+    <ProjectReference Include="MMOCommon\MMOCommon.csproj">
+      <Project>{2F004E15-5680-4F1E-8389-1A5F9B092733}</Project>
+      <Name>MMOCommon</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -81,5 +89,8 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Data\" />
   </ItemGroup>
 </Project>
