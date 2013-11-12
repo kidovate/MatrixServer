@@ -116,6 +116,20 @@ namespace MMOController
             if (client == null) return;
             ClientCache.ConnectedClients.Remove(client.Id);
         }
+
+		/// <summary>
+		/// Send a message to the host.
+		/// </summary>
+		/// <param name="clientInfo">Client identifier.</param>
+		/// <param name="buildMessage">Message to send.</param>
+		public void SendTo(ClientInfo clientInfo, byte[] buildMessage)
+		{
+			lock (server)
+			{
+				server.SendMore(hostInfo.Id);
+				server.Send(buildMessage);
+			}
+		}
 	}
 }
 

@@ -1,0 +1,1 @@
+This namespace contains ONLY model objects for storage in the database, as well as the Fluent NHibernate definitions.

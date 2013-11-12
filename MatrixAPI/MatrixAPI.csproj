@@ -67,6 +67,7 @@
     <Compile Include="Util\BitShift.cs" />
     <Compile Include="Util\Extensions.cs" />
     <Compile Include="Util\ObservableDictionary.cs" />
+    <Compile Include="Util\TruncateString.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

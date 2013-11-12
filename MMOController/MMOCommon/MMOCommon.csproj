@@ -40,6 +40,8 @@
     <Compile Include="ClusterStatus.cs" />
     <Compile Include="ZoneInfo.cs" />
     <Compile Include="Vector2D.cs" />
+    <Compile Include="LoginRequest.cs" />
+    <Compile Include="UserType.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

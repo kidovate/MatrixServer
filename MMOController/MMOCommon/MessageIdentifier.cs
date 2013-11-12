@@ -34,7 +34,8 @@ namespace MMOCommon
 		InvalidKey,
 
 		/// <summary>
-		/// Confirm encryption and begin login sequence
+		/// Confirm encryption and begin login sequence.
+		/// Data is the password salt to use during login.
 		/// </summary>
 		ConfirmEncryption,
 
