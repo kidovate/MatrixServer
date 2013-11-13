@@ -15,6 +15,7 @@ using ProtoBuf;
 using ZeroMQ;
 using log4net;
 using MatrixHost.Properties;
+using MatrixAPI.Util;
 
 namespace MatrixHost.MasterInterface
 {
@@ -244,22 +245,10 @@ namespace MatrixHost.MasterInterface
                         NodeExistsResponses.Add(reqId, response);
                         break;
                     case MessageIdentifier.LaunchNode:
-                        using (MemoryStream ms = new MemoryStream())
-                        {
-                            ms.Write(data, 0, data.Length);
-                            ms.Position = 0;
-                            var nodeInfo = Serializer.Deserialize<NodeInfo>(ms);
-                            Task.Factory.StartNew(()=>NodePool.Instance.LaunchNode(nodeInfo));
-                        }
+						Task.Factory.StartNew(()=>NodePool.Instance.LaunchNode(data.Deserialize<NodeInfo>()));
                         break;
                     case MessageIdentifier.ShutdownNode:
-                        using (MemoryStream ms = new MemoryStream())
-                        {
-                            ms.Write(data, 0, data.Length);
-                            ms.Position = 0;
-                            var nodeInfo = Serializer.Deserialize<NodeInfo>(ms);
-                            Task.Factory.StartNew(()=>NodePool.Instance.ShutdownNode(nodeInfo));
-                        }
+						Task.Factory.StartNew(()=>NodePool.Instance.ShutdownNode(data.Deserialize<NodeInfo>()));
                         break;
                     case MessageIdentifier.RMIInvoke:
                         NodeRMI rmi;
@@ -272,33 +261,21 @@ namespace MatrixHost.MasterInterface
                         Task.Factory.StartNew(()=>NodePool.Instance.ProcessRMI(rmi));
                         break;
                     case MessageIdentifier.RMIResponse:
-                        NodeRMI rmir;
-                        using(MemoryStream ms = new MemoryStream())
-                        {
-                            ms.Write(data, 0, data.Length);
-                            ms.Position = 0;
-                            rmir = Serializer.Deserialize<NodeRMI>(ms);
-                        }
-                        NodePool.Instance.rmiResponses.Add(rmir.RequestID, rmir);
+					var rmir = data.Deserialize<NodeRMI>();
+						NodePool.Instance.rmiResponses.Add(rmir.RequestID, rmir);
                         break;
                     case MessageIdentifier.Heartbeat:
                         heartbeatAttempts = 0;
                         break;
                     case MessageIdentifier.ReqNodeList:
-                        NodeDictionary.Clear();
-                        using (MemoryStream ms = new MemoryStream())
+                        NodeDictionary.Clear();;
+						foreach(var info in data.Deserialize<NodeInfo[]>())
                         {
-                            ms.Write(data, 0, data.Length);
-                            ms.Position = 0;
-                            var nodeInfo = Serializer.Deserialize<NodeInfo[]>(ms);
-                            foreach(var info in nodeInfo)
-                            {
-                                info.RMIResolvedType =
-                                    NodeManager.Instance.GetHandlerForRMITypeName(info.RMITypeName).ComponentModel.Implementation;
-                                NodeDictionary.Add(info.Id, info);
-                            }
-                            log.Debug("Received node dictionary rebuild with "+nodeInfo.Length+" entries.");
+                            info.RMIResolvedType =
+                                NodeManager.Instance.GetHandlerForRMITypeName(info.RMITypeName).ComponentModel.Implementation;
+                            NodeDictionary.Add(info.Id, info);
                         }
+                        log.Debug("Received node dictionary rebuild with "+nodeInfo.Length+" entries.");
                         break;
                     case MessageIdentifier.NodeRemoved:
                     case MessageIdentifier.NodeAdded:

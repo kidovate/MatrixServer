@@ -62,10 +62,10 @@ namespace MatrixAPI.Data
             int i = 0;
             foreach(var obj in objects)
             {
-                using (MemoryStream ms = new MemoryStream())
+				using (MemoryStream stream = new MemoryStream())
                 {
-                    formatter.Serialize(ms, obj);
-                    data[i] = ms.ToArray();
+					formatter.Serialize(stream, obj);
+					data[i] = stream.ToArray();
                     BitShift.ShiftLeft(data[i]);
                 }
                 i++;
@@ -80,10 +80,10 @@ namespace MatrixAPI.Data
         public void SerializeReturnValue(object returnValue)
         {
             BinaryFormatter formatter = new BinaryFormatter();
-            using (MemoryStream ms = new MemoryStream())
+			using (MemoryStream stream = new MemoryStream())
             {
-                formatter.Serialize(ms, returnValue);
-                ReturnValue = ms.ToArray();
+				formatter.Serialize(stream, returnValue);
+				ReturnValue = stream.ToArray();
                 BitShift.ShiftLeft(ReturnValue);
             }
         }
@@ -99,13 +99,13 @@ namespace MatrixAPI.Data
             int i = 0;
             foreach (var arr in Arguments)
             {
-                using (MemoryStream ms = new MemoryStream())
+				using (MemoryStream stream = new MemoryStream())
                 {
                     var shifted = (byte[]) arr.Clone();
                     BitShift.ShiftRight(shifted);
-                    ms.Write(shifted, 0, shifted.Length);
-                    ms.Position = 0;
-                    data[i]=formatter.Deserialize(ms);
+					stream.Write(shifted, 0, shifted.Length);
+					stream.Position = 0;
+					data[i]=formatter.Deserialize(stream);
                 }
                 i++;
             }
@@ -119,13 +119,13 @@ namespace MatrixAPI.Data
         public object DeserializeReturnValue()
         {
             BinaryFormatter formatter = new BinaryFormatter();
-            using (MemoryStream ms = new MemoryStream())
+			using (MemoryStream stream = new MemoryStream())
             {
                 var shifted = (byte[])ReturnValue.Clone();
                 BitShift.ShiftRight(shifted);
-                ms.Write(shifted, 0, shifted.Length);
-                ms.Position = 0;
-                return formatter.Deserialize(ms);
+				stream.Write(shifted, 0, shifted.Length);
+				stream.Position = 0;
+				return formatter.Deserialize(stream);
             }
         }
     }

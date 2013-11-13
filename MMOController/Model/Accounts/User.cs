@@ -1,4 +1,5 @@
 using System;
+using MMOCommon;
 
 namespace MMOController.Model.Accounts
 {

@@ -10,6 +10,7 @@ using ProtoBuf;
 using ZeroMQ;
 using log4net;
 using MatrixMaster.Properties;
+using MatrixAPI.Util;
 
 namespace MatrixMaster.Servers
 {
@@ -169,11 +170,7 @@ namespace MatrixMaster.Servers
                 return;
             }
             var targetHost = HostCache.FindHost(target.HostID);
-            using(MemoryStream ms = new MemoryStream())
-            {
-                Serializer.Serialize(ms, rmi);
-                SendTo(targetHost.Info, targetHost.BuildMessage(MessageIdentifier.RMIResponse, ms.ToArray()));
-            }
+			SendTo(targetHost.Info, targetHost.BuildMessage(MessageIdentifier.RMIResponse, rmi.Serialize()));
         }
 
         /// <summary>
@@ -190,11 +187,7 @@ namespace MatrixMaster.Servers
                 return;
             }
             var destoHost = HostCache.FindHost(destoNode.HostID);
-            using (MemoryStream ms = new MemoryStream())
-            {
-                Serializer.Serialize(ms, rmi);
-                SendTo(destoHost.Info, destoHost.BuildMessage(MessageIdentifier.RMIInvoke, ms.ToArray()));
-            }
+			SendTo(destoHost.Info, destoHost.BuildMessage(MessageIdentifier.RMIInvoke, rmi.Serialize()));
         }
     }
 }

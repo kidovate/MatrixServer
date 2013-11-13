@@ -12,6 +12,7 @@ using MatrixAPI.Interfaces;
 using ProtoBuf;
 using ZeroMQ;
 using log4net;
+using MatrixAPI.Util;
 
 namespace MMOController.Nodes
 {
@@ -93,13 +94,7 @@ namespace MMOController.Nodes
 
         private SyncJob CreateJob(byte[] toArray)
         {
-            Dictionary<string, byte[]> index;
-            using(MemoryStream ms = new MemoryStream())
-            {
-                ms.Write(toArray, 0, toArray.Length);
-                ms.Position = 0;
-                index = Serializer.Deserialize<Dictionary<string, byte[]>>(ms);
-            }
+			Dictionary<string, byte[]> index = toArray.Deserialize<Dictionary<string, byte[]>>();
 
             SyncJob result = new SyncJob();
             result.filesToDelete = new List<string>();

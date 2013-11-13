@@ -126,7 +126,7 @@ namespace MMOController
 		{
 			lock (server)
 			{
-				server.SendMore(hostInfo.Id);
+				server.SendMore(clientInfo.Id);
 				server.Send(buildMessage);
 			}
 		}

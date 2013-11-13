@@ -68,6 +68,7 @@
     <Compile Include="Util\Extensions.cs" />
     <Compile Include="Util\ObservableDictionary.cs" />
     <Compile Include="Util\TruncateString.cs" />
+    <Compile Include="Util\ProtobufExt.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

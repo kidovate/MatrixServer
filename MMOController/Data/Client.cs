@@ -8,6 +8,8 @@ using MatrixAPI;
 using MMOCommon;
 using System.IO;
 using System.Text;
+using ProtoBuf;
+using MatrixAPI.Util;
 
 namespace MMOController
 {
@@ -110,13 +112,13 @@ namespace MMOController
 				}
 				//Get the encryption key MD5.
 				byte[] keymd5 = message.Skip(1).ToArray();
-				AES encrypt = EncryptionKeyDB.Instance.ByHash(keymd5);
+				AES encrypt = MmoEncrypt.ByHash(keymd5);
 				if (encrypt == null)
 				{
 					log.Info("Key not valid for client, rejecting and disconnecting.");
 					clientInter.SendTo(clientInfo, BuildMessage(MessageIdentifier.InvalidKey, null));
 					clientInter.Disconnect(clientInfo);
-					status = HostStatus.Disconnected;
+					status = ClientStatus.Disconnected;
 				}
 				else
 				{
@@ -127,7 +129,13 @@ namespace MMOController
 				}
 				break;
 			case MessageIdentifier.LoginVerify:
-
+				if(status != ClientStatus.LoggingIn)
+				{	
+					log.Error("Client tried to log in when not in login state.");
+					break;
+				}
+				LoginRequest request = message.Deserialize<LoginRequest>();
+				break;
             }
 	    }
 

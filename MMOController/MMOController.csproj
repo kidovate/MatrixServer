@@ -108,5 +108,6 @@
   <ItemGroup>
     <Folder Include="Model\" />
     <Folder Include="Model\Accounts\" />
+    <Folder Include="Util\" />
   </ItemGroup>
 </Project>

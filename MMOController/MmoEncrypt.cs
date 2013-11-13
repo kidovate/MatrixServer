@@ -2,6 +2,9 @@ using System;
 using System.IO;
 using MatrixAPI.Encryption;
 using System.Collections.Generic;
+using System.Text;
+using System.Security.Cryptography;
+using System.Linq;
 
 namespace MMOController
 {
@@ -19,7 +22,7 @@ namespace MMOController
 		/// </summary>
 		/// <value>The keys.</value>
 		public static Dictionary<byte[], AES> Keys {
-			public get{
+			get{
 				return keys;
 			}
 		}
@@ -55,6 +58,16 @@ namespace MMOController
 					}
 				}
 			}
+		}
+
+		/// <summary>
+		/// Get an encryption pair by md5 hash.
+		/// </summary>
+		/// <returns>The hash.</returns>
+		/// <param name="keymd5">Keymd5.</param>
+		public static AES ByHash(byte[] keymd5)
+		{
+			return (from key in keys.Keys where key.SequenceEqual(keymd5) select keys[key]).FirstOrDefault();
 		}
 	}
 }
