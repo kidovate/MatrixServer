@@ -10,7 +10,7 @@ namespace MatrixHost.Nodes
 {
    public void Install(IWindsorContainer container, IConfigurationStore store)
    {
-      container.Register(Classes
+        container.Register(Classes
 			                .FromAssemblyInDirectory(new AssemblyFilter(NodeManager.libFolderName))
                             .BasedOn<INodeController>().OrBasedOn(typeof(INode)).WithService.FromInterface()
                             .LifestyleTransient()

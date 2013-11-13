@@ -275,7 +275,7 @@ namespace MatrixHost.MasterInterface
                                 NodeManager.Instance.GetHandlerForRMITypeName(info.RMITypeName).ComponentModel.Implementation;
                             NodeDictionary.Add(info.Id, info);
                         }
-                        log.Debug("Received node dictionary rebuild with "+nodeInfo.Length+" entries.");
+                        log.Debug("Received node dictionary rebuild.");
                         break;
                     case MessageIdentifier.NodeRemoved:
                     case MessageIdentifier.NodeAdded:

@@ -23,5 +23,8 @@
     <Setting Name="Protocol" Type="System.String" Scope="User">
       <Value Profile="(Default)">tcp</Value>
     </Setting>
+    <Setting Name="DatabaseConnectionString" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Server=54.200.207.187; Port=3306; Database=omunidev1; Uid=mmonode1; Pwd=3gem0X1csWIyx2*f7bQo;</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

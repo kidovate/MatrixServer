@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Amazon.S3.Model;
 using MMOController.Data;
+using MMOController.Model.Accounts;
 using MMOController.Properties;
 using MatrixAPI.Interfaces;
 using ProtoBuf;

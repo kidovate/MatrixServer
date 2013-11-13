@@ -1,7 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using MMOController.Data;
+using MMOController.Model.Accounts;
 using MatrixAPI.Encryption;
+using NHibernate;
 using log4net;
 using System.Timers;
 using MatrixAPI;
@@ -24,6 +27,7 @@ namespace MMOController
 		private readonly ILog log;
 		private string passwordSalt;
 		Timer heartbeat = new Timer(30000);
+	    private User thisUser;
 		private LoginNode clientInter;
 		//todo: add zones collection
 
@@ -134,7 +138,36 @@ namespace MMOController
 					log.Error("Client tried to log in when not in login state.");
 					break;
 				}
+                
 				LoginRequest request = message.Deserialize<LoginRequest>();
+                log.Debug("Login request, "+request.Username);
+                User user; 
+                using(ISession session= MmoDatabase.Session)
+                {
+                    using(var transaction = session.BeginTransaction())
+                    {
+                        user = session.QueryOver<User>()
+                            .Where(d => d.Username == request.Username)
+                            .List().FirstOrDefault();
+                    }
+                }
+                LoginResponse response;
+                if(user == null)
+                {
+                    response = new LoginResponse() {Success = false};
+                }else
+                {
+                    string hashedPassword = StringMD5.CreateMD5Hash(StringMD5.CreateMD5Hash(passwordSalt + user.Password)+passwordSalt);
+                    if (request.MD5Pass != hashedPassword)
+                        response = new LoginResponse() {Success = false, Message = "Password is incorrect."};
+                    //Here we should actually be logged in
+                    log.Debug("Client logged in, username: "+user.Username);
+                    thisUser = user;
+                    status = ClientStatus.CharacterSelect;
+                    response = new LoginResponse() {Success = true};
+                }
+
+                clientInter.SendTo(clientInfo, BuildMessage(MessageIdentifier.LoginVerify, response.Serialize()));
 				break;
             }
 	    }

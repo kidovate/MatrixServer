@@ -8,11 +8,11 @@
     <Setting Name="MasterPort" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">6560</Value>
     </Setting>
-    <Setting Name="KeyFile" Type="System.String" Scope="User">
-      <Value Profile="(Default)">EncryptionKey.mek</Value>
-    </Setting>
     <Setting Name="Protocol" Type="System.String" Scope="User">
       <Value Profile="(Default)">tcp</Value>
+    </Setting>
+    <Setting Name="KeyFile" Type="System.String" Scope="User">
+      <Value Profile="(Default)">EncryptionKey.mek</Value>
     </Setting>
   </Settings>
 </SettingsFile>

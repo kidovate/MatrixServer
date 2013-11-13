@@ -106,5 +106,18 @@ namespace MMOController.Properties {
                 this["Protocol"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Server=54.200.207.187; Port=3306; Database=omunidev1; Uid=mmonode1; Pwd=3gem0X1cs" +
+            "WIyx2*f7bQo;")]
+        public string DatabaseConnectionString {
+            get {
+                return ((string)(this["DatabaseConnectionString"]));
+            }
+            set {
+                this["DatabaseConnectionString"] = value;
+            }
+        }
     }
 }

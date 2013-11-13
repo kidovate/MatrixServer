@@ -13,8 +13,8 @@ namespace MatrixAPI.Util
 		/// <typeparam name="T">Type to deserialize.</typeparam>
 		public static T Deserialize<T>(this byte[] t)
 		{
-			if(!Attribute.IsDefined(typeof(T), typeof(ProtoContractAttribute)))
-			{
+            if (!typeof(T).IsArray && !Attribute.IsDefined(typeof(T), typeof(ProtoContractAttribute)))
+            {
 				throw new Exception("You can only deserialize ProtoBuf objects.");
 			}
 

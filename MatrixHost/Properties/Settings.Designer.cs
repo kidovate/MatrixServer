@@ -49,18 +49,6 @@ namespace MatrixHost.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("EncryptionKey.mek")]
-        public string KeyFile {
-            get {
-                return ((string)(this["KeyFile"]));
-            }
-            set {
-                this["KeyFile"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("tcp")]
         public string Protocol {
             get {
@@ -68,6 +56,18 @@ namespace MatrixHost.Properties {
             }
             set {
                 this["Protocol"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("EncryptionKey.mek")]
+        public string KeyFile {
+            get {
+                return ((string)(this["KeyFile"]));
+            }
+            set {
+                this["KeyFile"] = value;
             }
         }
     }

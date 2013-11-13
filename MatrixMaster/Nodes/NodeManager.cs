@@ -9,6 +9,7 @@ using System.IO;
 using System.Reflection;
 using MatrixAPI.Interfaces;
 using MatrixAPI.Util;
+using MatrixMaster.Nodes;
 using log4net;
 
 namespace MatrixMaster

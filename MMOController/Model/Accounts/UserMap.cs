@@ -12,10 +12,9 @@ namespace MMOController.Model.Accounts
 		{
 			Id(x=>x.Id);
 			Map(x=>x.Password);
-			Map(x=>x.Username)
-				.Unique()
-				.ReadOnly();
-			Map(x=>x.Password);
+		    Map(x => x.Username)
+		        .Unique()
+		        .ReadOnly();
 			Map(x=>x.Role);
 		}
 	}

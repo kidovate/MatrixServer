@@ -1,10 +1,9 @@
-using System;
 using MatrixAPI.Interfaces;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using Castle.MicroKernel.SubSystems.Configuration;
 
-namespace MatrixMaster
+namespace MatrixMaster.Nodes
 {
 	public class NodeInstaller : IWindsorInstaller
 {

@@ -1,6 +1,8 @@
 using System;
 using FluentNHibernate.Cfg;
+using FluentNHibernate.Cfg.Db;
 using MMOController.Model.Accounts;
+using NHibernate.Cfg;
 using NHibernate.Tool.hbm2ddl;
 using NHibernate;
 using System.Collections.Generic;
@@ -14,9 +16,19 @@ namespace MMOController
 	{
 		private static ISessionFactory sessionFactory;
 
+        /// <summary>
+        /// Please wrap this in a using block.
+        /// </summary>
+	    public static ISession Session
+	    {
+	        get { return sessionFactory.OpenSession(); }
+	    }
+
 		static MmoDatabase ()
 		{
-			sessionFactory = CreateSessionFactory();
+
+                sessionFactory = CreateSessionFactory();
+            
 		}
 
 		/// <summary>
@@ -26,7 +38,7 @@ namespace MMOController
 		public static void Save<T>(T instance){
 			using(var session = sessionFactory.OpenSession()){
 				using(var transaction = session.BeginTransaction()){
-					transaction.
+					session.SaveOrUpdate(instance);
 					transaction.Commit();
 				}
 			}
@@ -41,7 +53,7 @@ namespace MMOController
 			using(var session = sessionFactory.OpenSession()){
 				using(var transaction = session.BeginTransaction()){
 					foreach(var obj in objects){
-						transaction.SaveOrUpdate(instance);
+						session.SaveOrUpdate(obj);
 					}	
 					transaction.Commit();
 				}
@@ -56,7 +68,7 @@ namespace MMOController
 		public static void Remove<T>(T instance){
 			using(var session = sessionFactory.OpenSession()){
 				using(var transaction = session.BeginTransaction()){
-					transaction.Delete(instance);
+					session.Delete(instance);
 					transaction.Commit();
 				}
 			}
@@ -68,28 +80,37 @@ namespace MMOController
 		/// <typeparam name="T">The type to look for.</typeparam>
 		public static ICollection<T> List<T>(){
 			using(var session = sessionFactory.OpenSession()){
-				using(var transaction = session.BeginTransaction()){
-					return transaction.CreateCriteria(typeof(T)).List<T>();
+				using(var transaction = session.BeginTransaction())
+				{
+					return session.CreateCriteria(typeof(T)).List<T>();
 				}
 			}
 		}
 
 		private static ISessionFactory CreateSessionFactory()
 		{
-			return Fluently.Configure()
-					.Database(
-						MySqlConfiguration.Standard.ConnectionString(
-							c => c.FromConnectionStringWithKey("MoyaAws1")
-						)
-					)
-					.Mappings(m =>
-						m.FluentMappings.AddFromAssemblyOf<User>()
-					)
-					.ExposeConfiguration(((NHibernate.Cfg.Configuration obj) => {
-						new SchemaUpdate(config).Execute(false, true);
-					}))
-					.BuildSessionFactory();
+            try
+            {
+			    return Fluently.Configure()
+					    .Database(
+						     MySQLConfiguration.Standard.ConnectionString(Properties.Settings.Default.DatabaseConnectionString)
+					    )
+					    .Mappings(m =>
+						    m.FluentMappings.AddFromAssemblyOf<User>()
+					    )
+					    .ExposeConfiguration(BuildSchema)
+					    .BuildSessionFactory();
+            }catch(Exception ex)
+		    {
+		        Console.WriteLine("Error configuring database: "+ex.Message);
+		        return null;
+		    }
 		}
+
+	    private static void BuildSchema(Configuration obj)
+	    {
+	        new SchemaUpdate(obj).Execute(false, true);
+	    }
 	}
 }
 
