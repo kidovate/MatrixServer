@@ -84,6 +84,8 @@
     <Compile Include="MmoEncrypt.cs" />
     <Compile Include="Model\Accounts\User.cs" />
     <Compile Include="Model\Accounts\UserMap.cs" />
+    <Compile Include="Model\Character\Character.cs" />
+    <Compile Include="Model\Character\CharacterMap.cs" />
     <Compile Include="MmoDatabase.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
