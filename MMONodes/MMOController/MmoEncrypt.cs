@@ -43,8 +43,8 @@ namespace MMOController
 			{
 				//Generate a new key
 				AES newKey = new AES(Encoding.UTF8);
-				newKey.KeyToFile(folderName+"/GeneratedKey.mek");
-				File.WriteAllText(folderName+"/GeneratedKey.txt", "There were no keys, so this default key was generated for you. Note this key will be erased the next time nodes are synced and this is NOT the proper way to add client keys.");
+				newKey.KeyToFile(folderName+"/EncryptionKey.mek");
+				File.WriteAllText(folderName+"/EncryptionKey.txt", "There were no keys, so this default key was generated for you. Note this key will be erased the next time nodes are synced and this is NOT the proper way to add client keys.");
 				files = Directory.GetFiles(folderName, "*.mek");
 			}
 			foreach(var file in files)

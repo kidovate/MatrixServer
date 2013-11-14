@@ -62,7 +62,7 @@ namespace MMOController.Nodes
                 var message = server.ReceiveMessage(TimeSpan.FromMilliseconds(500));
                 if (message.FrameCount == 0) continue;
 
-				//log.Debug("Processing request: " + System.Enum.GetName(typeof(LauncherMessageIdentifier), message[0].Buffer[0]));
+				log.Debug("Processing request: " + System.Enum.GetName(typeof(LauncherMessageIdentifier), message[0].Buffer[0]));
 
                 switch((LauncherMessageIdentifier)message[0].Buffer[0])
                 {
@@ -94,33 +94,40 @@ namespace MMOController.Nodes
 
         private SyncJob CreateJob(byte[] toArray)
         {
-			Dictionary<string, byte[]> index = toArray.Deserialize<Dictionary<string, byte[]>>();
-
-            SyncJob result = new SyncJob();
-            result.filesToDelete = new List<string>();
-            result.filesToDownload = new List<string>();
-
-            foreach(var file in index.Keys)
+            try
             {
-                if(!fileIndex.ContainsKey(file)) result.filesToDelete.Add(file);
-            }
+                Dictionary<string, byte[]> index = toArray.Deserialize<Dictionary<string, byte[]>>();
 
-            foreach(var file in fileIndex)
-            {
-                if(!index.ContainsKey(file.Key) || !index[file.Key].SequenceEqual(file.Value))
+                SyncJob result = new SyncJob();
+                result.filesToDelete = new List<string>();
+                result.filesToDownload = new List<string>();
+
+                foreach (var file in index.Keys)
                 {
-                    var downloadUrl =
-                        MmoAws.AmazonS3.GetPreSignedURL(new GetPreSignedUrlRequest()
-                                                            {
-                                                                BucketName = Settings.Default.BucketName,
-                                                                Key = Settings.Default.FolderName + "/" + file.Key,
-                                                                Expires = DateTime.Now.AddHours(3)
-                                                            });
-                    result.filesToDownload.Add(file.Key+"|"+downloadUrl);
+                    if (!fileIndex.ContainsKey(file)) result.filesToDelete.Add(file);
                 }
-            }
 
-            return result;
+                foreach (var file in fileIndex)
+                {
+                    if (!index.ContainsKey(file.Key) || !index[file.Key].SequenceEqual(file.Value))
+                    {
+                        var downloadUrl =
+                            MmoAws.AmazonS3.GetPreSignedURL(new GetPreSignedUrlRequest()
+                                                                {
+                                                                    BucketName = Settings.Default.BucketName,
+                                                                    Key = Settings.Default.FolderName + "/" + file.Key,
+                                                                    Expires = DateTime.Now.AddHours(3)
+                                                                });
+                        result.filesToDownload.Add(file.Key + "|" + downloadUrl);
+                    }
+                }
+
+                return result;
+            }catch(Exception ex)
+            {
+                log.Error("Error creating sync job, "+ex.Message);
+                return new SyncJob();
+            }
         }
 
         /// <summary>

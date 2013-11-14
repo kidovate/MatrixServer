@@ -1,20 +1,13 @@
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using Amazon.S3.Model;
 using MMOController.Data;
-using MMOController.Model.Accounts;
 using MMOController.Properties;
 using MatrixAPI.Interfaces;
-using ProtoBuf;
 using log4net;
 using ZeroMQ;
-using MatrixAPI.Data;
 using MMOCommon;
 
-namespace MMOController
+namespace MMOController.Nodes
 {
 	/// <summary>
 	///  Initial and constant connection point for clients (game engine). Maintains login state of a client.
@@ -35,6 +28,8 @@ namespace MMOController
 			log.Info("Launching a new game server node on port "+Settings.Default.GameInterfacePort);
 			server = MmoZmq.context.CreateSocket(ZeroMQ.SocketType.ROUTER);
 
+		    log.Debug(MmoEncrypt.Keys.Count+" encryption keys.");
+
 			status = 1;
 			serverTask = Task.Factory.StartNew(ServerThread);
 		}
@@ -44,7 +39,7 @@ namespace MMOController
 			server.Bind(Settings.Default.Protocol+"://*:" + Settings.Default.GameInterfacePort);
 			while(status == 1)
 			{
-				var message = server.ReceiveMessage(TimeSpan.FromMilliseconds(500));
+				var message = server.ReceiveMessage(TimeSpan.FromMilliseconds(600));
 				if (message.FrameCount == 0) continue;
 
 				//Determine the identity of the host

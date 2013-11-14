@@ -80,6 +80,7 @@ namespace MatrixMaster.Data
 				SendEntireNodeList ();
 				return;
 			}
+            if (lastInter == null) return;
 
 			if (notifyCollectionChangedEventArgs.NewItems != null)
 				foreach (var newNode in notifyCollectionChangedEventArgs.NewItems) {

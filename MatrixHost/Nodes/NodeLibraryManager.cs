@@ -57,7 +57,7 @@ namespace MatrixHost.Nodes
 	    public void IndexLibraries()
 	    {
 	        log.Debug("Filesystem map creation requested, loading files in path '"+libraryPath+"'...");
-            var files = Directory.GetFiles(libraryPath, "*.dll").Select(Path.GetFileName);
+            var files = Directory.GetFiles(libraryPath, "*", SearchOption.AllDirectories).Select(Path.GetFileName);
             var filesystemMap = new Dictionary<string, byte[]>();
             foreach(var file in files)
 	        {

@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using MMOController.Data;
 using MMOController.Model.Accounts;
+using MMOController.Nodes;
 using MatrixAPI.Encryption;
 using NHibernate;
+using NHibernate.Criterion;
 using log4net;
 using System.Timers;
 using MatrixAPI;
@@ -26,7 +28,7 @@ namespace MMOController
 		private AES encryption;
 		private readonly ILog log;
 		private string passwordSalt;
-		Timer heartbeat = new Timer(30000);
+		Timer heartbeat = new Timer(20000);
 	    private User thisUser;
 		private LoginNode clientInter;
 		//todo: add zones collection
@@ -56,16 +58,21 @@ namespace MMOController
 			heartbeat.Elapsed += (sender, args) =>
 			{
 				log.Info("Client timed out, terminating");
-				status = ClientStatus.Disconnected;
-				clientInter.Disconnect(clientInfo);
-				heartbeat.Stop();
-				heartbeat.Dispose();
-				LeaveAllZones();
+			    DisconnectClient();
 			};
 		    clientInter = inter;
 		}
 
-		/// <summary>
+	    private void DisconnectClient()
+	    {
+            status = ClientStatus.Disconnected;
+            clientInter.Disconnect(clientInfo);
+            heartbeat.Stop();
+            heartbeat.Dispose();
+            LeaveAllZones();
+	    }
+
+	    /// <summary>
 		/// Shortcut - tells all zones the client has left the network.
 		/// </summary>
 		void LeaveAllZones(){
@@ -90,12 +97,12 @@ namespace MMOController
                 message = finalMessage;
             }
 
-			//if(message[0] != (byte)MessageIdentifier.Heartbeat) 
-				//log.Debug("Received message: "+System.Enum.GetName(typeof(MessageIdentifier), message[0]));
+			if(message[0] != (byte)MessageIdentifier.Heartbeat) 
+				log.Debug("Received message: "+System.Enum.GetName(typeof(MessageIdentifier), message[0]));
             switch ((MessageIdentifier)message[0])
             {
 			case MessageIdentifier.Heartbeat:
-				clientInter.SendTo(clientInfo, BuildMessage(MessageIdentifier.Heartbeat, null));
+				//clientInter.SendTo(clientInfo, BuildMessage(MessageIdentifier.Heartbeat, null));
 				break;
 			case MessageIdentifier.SetIdentity:
 				if (status != ClientStatus.NoIdentity)
@@ -128,8 +135,8 @@ namespace MMOController
 				{
 					log.Debug("Client accepted, beginning login.");
 					status = ClientStatus.LoggingIn;
+                    encryption = encrypt;
 					clientInter.SendTo(clientInfo, BuildMessage(MessageIdentifier.ConfirmEncryption, Encoding.UTF8.GetBytes(passwordSalt)));
-					encryption = encrypt;
 				}
 				break;
 			case MessageIdentifier.LoginVerify:
@@ -139,36 +146,44 @@ namespace MMOController
 					break;
 				}
                 
-				LoginRequest request = message.Deserialize<LoginRequest>();
+				LoginRequest request = message.Skip(1).ToArray().Deserialize<LoginRequest>();
                 log.Debug("Login request, "+request.Username);
                 User user; 
                 using(ISession session= MmoDatabase.Session)
                 {
                     using(var transaction = session.BeginTransaction())
                     {
-                        user = session.QueryOver<User>()
-                            .Where(d => d.Username == request.Username)
-                            .List().FirstOrDefault();
+                        user = session.CreateCriteria(typeof (User))
+                            .Add(Restrictions.Eq("Username", request.Username))
+                            .UniqueResult<User>();
                     }
                 }
                 LoginResponse response;
                 if(user == null)
                 {
-                    response = new LoginResponse() {Success = false};
+                    response = new LoginResponse() {Success = false, Message = "User does not exist."};
                 }else
                 {
                     string hashedPassword = StringMD5.CreateMD5Hash(StringMD5.CreateMD5Hash(passwordSalt + user.Password)+passwordSalt);
                     if (request.MD5Pass != hashedPassword)
-                        response = new LoginResponse() {Success = false, Message = "Password is incorrect."};
-                    //Here we should actually be logged in
-                    log.Debug("Client logged in, username: "+user.Username);
-                    thisUser = user;
-                    status = ClientStatus.CharacterSelect;
-                    response = new LoginResponse() {Success = true};
+                    {
+                        response = new LoginResponse() { Success = false, Message = "Password is incorrect." };
+                    }
+                    else
+                    {
+                        //Here we should actually be logged in
+                        log.Debug("Client logged in, username: " + user.Username);
+                        thisUser = user;
+                        status = ClientStatus.CharacterSelect;
+                        response = new LoginResponse() {Success = true};
+                    }
                 }
 
                 clientInter.SendTo(clientInfo, BuildMessage(MessageIdentifier.LoginVerify, response.Serialize()));
 				break;
+            case MessageIdentifier.Disconnect:
+                    DisconnectClient();
+                    break;
             }
 	    }
 
