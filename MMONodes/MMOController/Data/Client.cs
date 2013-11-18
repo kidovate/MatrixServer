@@ -4,6 +4,7 @@ using System.Linq;
 using MMOController.Data;
 using MMOController.Model.Accounts;
 using MMOController.Nodes;
+using MMOController.Model.Character;
 using MatrixAPI.Encryption;
 using NHibernate;
 using NHibernate.Criterion;
@@ -25,8 +26,9 @@ namespace MMOController
 	{
 		private ClientInfo clientInfo;
 		private ClientStatus status;
+		private Character selectedCharacter;
 		private AES encryption;
-		private readonly ILog log;
+		private ILog log; //Updated when the client logs in 
 		private string passwordSalt;
 		Timer heartbeat = new Timer(20000);
 	    private User thisUser;
@@ -97,6 +99,8 @@ namespace MMOController
                 message = finalMessage;
             }
 
+			var data = message.Skip(1).ToArray();
+
 			if(message[0] != (byte)MessageIdentifier.Heartbeat) 
 				log.Debug("Received message: "+System.Enum.GetName(typeof(MessageIdentifier), message[0]));
             switch ((MessageIdentifier)message[0])
@@ -122,7 +126,7 @@ namespace MMOController
 					break;
 				}
 				//Get the encryption key MD5.
-				byte[] keymd5 = message.Skip(1).ToArray();
+				byte[] keymd5 = data;
 				AES encrypt = MmoEncrypt.ByHash(keymd5);
 				if (encrypt == null)
 				{
@@ -146,7 +150,7 @@ namespace MMOController
 					break;
 				}
                 
-				LoginRequest request = message.Skip(1).ToArray().Deserialize<LoginRequest>();
+				LoginRequest request = data.Deserialize<LoginRequest>();
                 log.Debug("Login request, "+request.Username);
                 User user; 
                 using(ISession session= MmoDatabase.Session)
@@ -173,18 +177,46 @@ namespace MMOController
                     {
                         //Here we should actually be logged in
                         log.Debug("Client logged in, username: " + user.Username);
+						log = LogManager.GetLogger("CLIENT "+user.Username.Truncate(4));
                         thisUser = user;
                         status = ClientStatus.CharacterSelect;
                         response = new LoginResponse() {Success = true};
                     }
-                }
+				}
+                
 
                 clientInter.SendTo(clientInfo, BuildMessage(MessageIdentifier.LoginVerify, response.Serialize()));
+				break;
+			case MessageIdentifier.CharacterData:
+				if(status != ClientStatus.CharacterSelect){
+					log.Error("Client tried to retreive characters while not in character select state.");
+					break;
+				}
+				CharacterData[] characters = new CharacterData[thisUser.Characters.Count];
+				int i = 0;
+				foreach(var character in thisUser.Characters){
+						characters[i] = new CharacterData(){Id = character.Id, Name = character.Name, XP = character.XP, Gender=character.Gender};
+						i++;
+				}
+				clientInter.SendTo(clientInfo, characters.Serialize());
+				break;
+			case MessageIdentifier.CharacterVerify:
+				if(status != ClientStatus.CharacterSelect){
+					log.Error("Client tried to select a character while not in character select state.");
+					break;
+				}
+				int characterId = BitConverter.ToInt32(data, 0);
+				Character selChar = thisUser.Characters.SingleOrDefault(x=>x.Id == characterId);
+				clientInter.SendTo(clientInfo, BuildMessage(MessageIdentifier.CharacterVerify, BitConverter.GetBytes(selChar != null)));
+				if(selChar != null){
+					//todo: do something after logging in and selecting character
+				}
+				selectedCharacter = selChar;
 				break;
             case MessageIdentifier.Disconnect:
                     DisconnectClient();
                     break;
-            }
+			}
 	    }
 
 		/// <summary>

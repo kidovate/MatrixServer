@@ -42,6 +42,7 @@
     <Compile Include="Vector2D.cs" />
     <Compile Include="LoginRequest.cs" />
     <Compile Include="UserType.cs" />
+    <Compile Include="CharacterData.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

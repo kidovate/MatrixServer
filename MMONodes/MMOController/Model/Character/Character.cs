@@ -1,5 +1,6 @@
 using System;
 using MMOCommon;
+using MMOController.Model.Accounts;
 
 namespace MMOController.Model.Character
 {
@@ -31,6 +32,12 @@ namespace MMOController.Model.Character
 		/// </summary>
 		/// <value>Character XP.</value>
 		public virtual int XP {get;set;}
+
+		/// <summary>
+		/// The user that owns this character
+		/// </summary>
+		/// <value>The user.</value>
+		public virtual User User {get;set;}
 	}
 }
 

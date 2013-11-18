@@ -15,6 +15,7 @@ namespace MMOController.Model.Character
         .Unique();
 		  Map(x => x.Gender);
 			Map(x=>x.XP);
+			References(x=>x.User);
 		}
 	}
 }
