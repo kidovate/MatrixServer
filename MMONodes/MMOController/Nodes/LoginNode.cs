@@ -18,6 +18,7 @@ namespace MMOController.Nodes
 		private static readonly ILog log = LogManager.GetLogger(typeof(LoginNode));
 		private Task serverTask;
 		private int status = 0;
+		private IMMOCluster controller;
 
 		/// <summary>
 		/// Initialize the node
@@ -29,6 +30,8 @@ namespace MMOController.Nodes
 			server = MmoZmq.context.CreateSocket(ZeroMQ.SocketType.ROUTER);
 
 		    log.Debug(MmoEncrypt.Keys.Count+" encryption keys.");
+
+			controller = portal.GetNodeProxy<IMMOCluster>();
 
 			status = 1;
 			serverTask = Task.Factory.StartNew(ServerThread);
@@ -57,7 +60,7 @@ namespace MMOController.Nodes
 						response[0] = (byte)MessageIdentifier.SetIdentity;
 						log.Debug("Assigned new client a 27 byte identity.");
 						//Setup a client object for this.
-						var client = new Client(this);
+						var client = new Client(this, controller);
 						ClientCache.RegisterClient(client);
 						client.Id.CopyTo(response, 1);
 						server.SendMore(identity.Buffer);

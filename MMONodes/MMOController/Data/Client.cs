@@ -32,6 +32,7 @@ namespace MMOController
 		private string passwordSalt;
 		Timer heartbeat = new Timer(20000);
 	    private User thisUser;
+		IMMOCluster controller;
 		private LoginNode clientInter;
 		//todo: add zones collection
 
@@ -51,8 +52,9 @@ namespace MMOController
 			get { return clientInfo; }
 		}
 
-		public Client (LoginNode inter)
+		public Client (LoginNode inter, IMMOCluster cluster)
 		{
+			controller = cluster;
 			log = LogManager.GetLogger("CLIENT "+this.GetHashCode().ToString().Truncate(4));
 			clientInfo = new ClientInfo() {Id = ClientCache.RandomId()};
 			status = ClientStatus.NoIdentity;
@@ -67,6 +69,9 @@ namespace MMOController
 
 	    private void DisconnectClient()
 	    {
+			if(thisUser != null){
+				controller.OnUserLoggedOff(thisUser.Username.ToLower());
+			}
             status = ClientStatus.Disconnected;
             clientInter.Disconnect(clientInfo);
             heartbeat.Stop();
@@ -173,12 +178,19 @@ namespace MMOController
                     }
                     else
                     {
-                        //Here we should actually be logged in
-                        log.Debug("Client logged in, username: " + user.Username);
-						log = LogManager.GetLogger("CLIENT "+user.Username.Truncate(4));
-                        thisUser = user;
-                        status = ClientStatus.CharacterSelect;
-                        response = new LoginResponse() {Success = true};
+						//check if the user is logged in
+						if(controller.IsUserLoggedIn(user.Username)){
+							log.Error("User '"+user.Username.Truncate(5)+"' is already logged in, rejecting...");
+							response = new LoginResponse() { Success = false, Message = "User is already logged in!" };
+						}else{
+	                        //Here we should actually be logged in
+	                        log.Debug("Client logged in, username: " + user.Username);
+							controller.OnUserLoggedIn(user.Username);
+							log = LogManager.GetLogger("CLIENT "+user.Username.Truncate(4));
+	                        thisUser = user;
+	                        status = ClientStatus.CharacterSelect;
+	                        response = new LoginResponse() {Success = true};
+						}
                     }
 				}
                 
