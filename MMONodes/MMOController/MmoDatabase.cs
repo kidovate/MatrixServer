@@ -16,15 +16,28 @@ namespace MMOController
 	{
 		private static ISessionFactory sessionFactory;
 
-        /// <summary>
-        /// Please wrap this in a using block.
-        /// </summary>
+	    private static ISession sessionInstance = null;
+
+	    /// <summary>
+	    /// No need to wrap in a using block
+	    /// </summary>
 	    public static ISession Session
 	    {
-	        get { return sessionFactory.OpenSession(); }
+	        get
+	        {
+	            if (sessionInstance == null)
+	            {
+	                sessionInstance = sessionFactory.OpenSession();
+	            }else if(!sessionInstance.IsConnected)
+	            {
+	                sessionInstance.Close();
+	                sessionInstance = sessionFactory.OpenSession();
+	            }
+                return sessionInstance;
+	        }
 	    }
 
-		static MmoDatabase ()
+	    static MmoDatabase ()
 		{
 
                 sessionFactory = CreateSessionFactory();
@@ -36,12 +49,11 @@ namespace MMOController
 		/// </summary>
 		/// <typeparam name="T">The type you are serializing.</typeparam>
 		public static void Save<T>(T instance){
-			using(var session = sessionFactory.OpenSession()){
-				using(var transaction = session.BeginTransaction()){
-					session.SaveOrUpdate(instance);
-					transaction.Commit();
-				}
-			}
+            using (var transaction = Session.BeginTransaction())
+            {
+                Session.SaveOrUpdate(instance);
+                transaction.Commit();
+            }
 		}
 
 		/// <summary>
@@ -50,13 +62,11 @@ namespace MMOController
 		/// <param name="objects">Objects to save.</param>
 		/// <typeparam name="T">Type of object you're committing<c>/typeparam>
 		public static void Save<T>(T[] objects){
-			using(var session = sessionFactory.OpenSession()){
-				using(var transaction = session.BeginTransaction()){
-					foreach(var obj in objects){
-						session.SaveOrUpdate(obj);
-					}	
-					transaction.Commit();
-				}
+			using(var transaction = Session.BeginTransaction()){
+				foreach(var obj in objects){
+					Session.SaveOrUpdate(obj);
+				}	
+				transaction.Commit();
 			}
 		}
 
@@ -66,12 +76,10 @@ namespace MMOController
 		/// <param name="instance">Instance to remove.</param>
 		/// <typeparam name="T">Type you are removing.</typeparam>
 		public static void Remove<T>(T instance){
-			using(var session = sessionFactory.OpenSession()){
-				using(var transaction = session.BeginTransaction()){
-					session.Delete(instance);
+				using(var transaction = Session.BeginTransaction()){
+					Session.Delete(instance);
 					transaction.Commit();
 				}
-			}
 		}
 
 		/// <summary>

@@ -85,7 +85,7 @@ namespace MMOController.Nodes
 						}
 					}else
 					{
-						hostIdentity.ProcessMessage(data.Buffer);
+						Task.Factory.StartNew(()=>hostIdentity.ProcessMessage(data.Buffer));
 					}
 
 				}

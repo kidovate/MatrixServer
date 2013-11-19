@@ -17,7 +17,9 @@ namespace MMOController.Model.Accounts
 		        .ReadOnly();
 			Map(x=>x.Role);
 			HasMany(x=>x.Characters)
-				.Inverse();
+				.Inverse()
+                .Cascade
+                .AllDeleteOrphan();
 		}
 	}
 }

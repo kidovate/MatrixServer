@@ -30,7 +30,7 @@ namespace MMOCommon
 		/// <summary>
 		/// True if male.
 		/// </summary>
-		[ProtoMember(3)]
+		[ProtoMember(4)]
 		public bool Gender;
 	}
 }

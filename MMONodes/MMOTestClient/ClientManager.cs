@@ -191,6 +191,7 @@ namespace MMOTestClient
                     var serialized = req.Serialize();
                     socket.Send(BuildMessage(MessageIdentifier.LoginVerify, serialized, true));
                     msg = socket.ReceiveMessage();
+                    if (msg.First.Buffer[0] != (byte)MessageIdentifier.LoginVerify) continue;
                     var data = DecryptMessage(msg.First.Buffer.Skip(1).ToArray());
                     LoginResponse resp = data.Deserialize<LoginResponse>();
                     if (resp.Success) loggedIn = true;
@@ -200,9 +201,28 @@ namespace MMOTestClient
                     }
 
                     window.SetProgress(100);
-                    window.SetStatus("Logged in!");
+                    window.SetStatus("Logged in, downloading characters...");
                     window.Log("Received response from server, we are logged in!");
                 }
+
+                window.Log("Retreiving characters list...");
+                socket.Send(BuildMessage(MessageIdentifier.CharacterData, null, true));
+                while(true)
+                {
+                    msg = socket.ReceiveMessage();
+                    if (msg.First.Buffer[0] == (byte)MessageIdentifier.Heartbeat) continue;
+                    var data = DecryptMessage(msg.First.Buffer.Skip(1).ToArray());
+                    CharacterData[] charData = data.Deserialize<CharacterData[]>();
+                    window.Log("Characters ("+charData.Length+"): ");
+                    foreach(var character in charData)
+                    {
+                        window.Log(" -- "+character.Name+", XP: "+character.XP+", Gender: "+(character.Gender ? "Male" : "Female"));
+                    }
+                    break;
+                }
+
+                window.SetStatus("Finished.");
+                window.Log("Finished downloading characters, disconnecting...");
 
                 socket.Send(BuildMessage(MessageIdentifier.Disconnect, null, true));
                 socket.Disconnect(Settings.Default.ServerAddress);

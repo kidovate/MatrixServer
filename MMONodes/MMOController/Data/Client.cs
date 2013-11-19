@@ -152,15 +152,13 @@ namespace MMOController
                 
 				LoginRequest request = data.Deserialize<LoginRequest>();
                 log.Debug("Login request, "+request.Username);
-                User user; 
-                using(ISession session= MmoDatabase.Session)
+                User user;
+                ISession session = MmoDatabase.Session;
+                using(var transaction = session.BeginTransaction())
                 {
-                    using(var transaction = session.BeginTransaction())
-                    {
-                        user = session.CreateCriteria(typeof (User))
-                            .Add(Restrictions.Eq("Username", request.Username))
-                            .UniqueResult<User>();
-                    }
+                    user = session.CreateCriteria(typeof (User))
+                        .Add(Restrictions.Eq("Username", request.Username))
+                        .UniqueResult<User>();
                 }
                 LoginResponse response;
                 if(user == null)
@@ -192,13 +190,19 @@ namespace MMOController
 					log.Error("Client tried to retreive characters while not in character select state.");
 					break;
 				}
+                if(thisUser.Characters.Count == 0)
+                {
+                    thisUser.Characters.Add(new Character()
+                                                {Gender = true, Name = "Test Character"+(new Random().Next(0,100)), User = thisUser, XP = 5000});
+                    MmoDatabase.Save(thisUser);
+                }
 				CharacterData[] characters = new CharacterData[thisUser.Characters.Count];
 				int i = 0;
 				foreach(var character in thisUser.Characters){
 						characters[i] = new CharacterData(){Id = character.Id, Name = character.Name, XP = character.XP, Gender=character.Gender};
 						i++;
 				}
-				clientInter.SendTo(clientInfo, characters.Serialize());
+				clientInter.SendTo(clientInfo, BuildMessage(MessageIdentifier.CharacterData, characters.Serialize()));
 				break;
 			case MessageIdentifier.CharacterVerify:
 				if(status != ClientStatus.CharacterSelect){
