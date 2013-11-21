@@ -38,6 +38,12 @@ namespace MMOController.Model.Character
 		/// </summary>
 		/// <value>The user.</value>
 		public virtual User User {get;set;}
+
+        /// <summary>
+        /// The current realm that the character is in.
+        /// </summary>
+        public virtual Realm CurrentRealm { get; set; }
+
 	}
 }
 

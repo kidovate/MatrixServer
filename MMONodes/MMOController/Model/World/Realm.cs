@@ -22,6 +22,11 @@ namespace MMOController
 		/// <value>The name of the level.</value>
 		public virtual string LevelName {get;set;}
 
+        /// <summary>
+        /// Human readable name of the realm.
+        /// </summary>
+        public virtual string Name { get; set; }
+
 		/// <summary>
 		/// The origin (0,0,0) of this realm in global coordinates
 		/// </summary>
@@ -49,9 +54,9 @@ namespace MMOController
 				return new Vector3D(){ XPosition = this.WorldOriginX, YPosition = this.WorldOriginY, ZPosition = this.WorldOriginZ};
 			}
 			set{
-				this.WorldOriginX = value.XPosition;
-				this.WorldOriginY = value.YPosition;
-				this.WorldOriginZ = value.ZPosition;
+				this.WorldOriginX = (int)value.XPosition;
+				this.WorldOriginY = (int)value.YPosition;
+				this.WorldOriginZ = (int)value.ZPosition;
 			}
 		}
 

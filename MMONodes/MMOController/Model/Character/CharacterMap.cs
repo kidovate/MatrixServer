@@ -16,6 +16,7 @@ namespace MMOController.Model.Character
 		  Map(x => x.Gender);
 			Map(x=>x.XP);
 			References(x=>x.User);
+		    References(x => x.CurrentRealm);
 		}
 	}
 }

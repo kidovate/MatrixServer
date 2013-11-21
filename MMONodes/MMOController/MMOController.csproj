@@ -65,6 +65,7 @@
     <Compile Include="Interfaces\ILauncherNode.cs" />
     <Compile Include="Interfaces\ILoginNode.cs" />
     <Compile Include="Interfaces\IMMOCluster.cs" />
+    <Compile Include="MmoWorld.cs" />
     <Compile Include="Nodes\LauncherNode.cs" />
     <Compile Include="Nodes\LoginNode.cs" />
     <Compile Include="MmoAws.cs" />
@@ -111,7 +112,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Util\" />
-    <Folder Include="Model\World\" />
   </ItemGroup>
   <ItemGroup />
 </Project>

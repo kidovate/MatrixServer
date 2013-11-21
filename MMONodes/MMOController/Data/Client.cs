@@ -205,13 +205,13 @@ namespace MMOController
                 if(thisUser.Characters.Count == 0)
                 {
                     thisUser.Characters.Add(new Character()
-                                                {Gender = true, Name = "Test Character"+(new Random().Next(0,100)), User = thisUser, XP = 5000});
+                                                {Gender = true, Name = "Test Character"+(new Random().Next(0,100)), User = thisUser, XP = 5000, CurrentRealm = MmoWorld.Realms.First()});
                     MmoDatabase.Save(thisUser);
                 }
 				CharacterData[] characters = new CharacterData[thisUser.Characters.Count];
 				int i = 0;
 				foreach(var character in thisUser.Characters){
-						characters[i] = new CharacterData(){Id = character.Id, Name = character.Name, XP = character.XP, Gender=character.Gender};
+						characters[i] = new CharacterData(){Id = character.Id, Name = character.Name, XP = character.XP, Gender=character.Gender, Realm = character.CurrentRealm.Name};
 						i++;
 				}
 				clientInter.SendTo(clientInfo, BuildMessage(MessageIdentifier.CharacterData, characters.Serialize()));

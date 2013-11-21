@@ -32,6 +32,12 @@ namespace MMOCommon
 		/// </summary>
 		[ProtoMember(4)]
 		public bool Gender;
+
+        /// <summary>
+        /// Name of the current level/realm for display.
+        /// </summary>
+        [ProtoMember(5)]
+	    public string Realm;
 	}
 }
 

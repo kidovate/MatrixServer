@@ -216,7 +216,7 @@ namespace MMOTestClient
                     window.Log("Characters ("+charData.Length+"): ");
                     foreach(var character in charData)
                     {
-                        window.Log(" -- "+character.Name+", XP: "+character.XP+", Gender: "+(character.Gender ? "Male" : "Female"));
+                        window.Log(" -- "+character.Name+", XP: "+character.XP+", Gender: "+(character.Gender ? "Male" : "Female")+", Realm: "+character.Realm);
                     }
                     break;
                 }
