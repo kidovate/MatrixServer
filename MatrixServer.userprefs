@@ -1,9 +1,8 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="MMOController/Nodes/LauncherNode.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="MMONodes/MMOController/Nodes/LoginNode.cs">
     <Files>
-      <File FileName="MMOController/Nodes/LauncherNode.cs" Line="65" Column="5" />
-      <File FileName="MMOController/MmoAws.cs" Line="19" Column="62" />
+      <File FileName="MMONodes/MMOController/Nodes/LoginNode.cs" Line="79" Column="29" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

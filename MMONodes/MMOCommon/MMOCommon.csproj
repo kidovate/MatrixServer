@@ -43,6 +43,7 @@
     <Compile Include="LoginRequest.cs" />
     <Compile Include="UserType.cs" />
     <Compile Include="CharacterData.cs" />
+    <Compile Include="Vector3D.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
