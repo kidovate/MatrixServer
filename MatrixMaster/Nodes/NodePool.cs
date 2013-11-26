@@ -12,6 +12,7 @@ using MatrixAPI.Util;
 using MatrixMaster.Data;
 using MatrixMaster.Servers;
 using ProtoBuf;
+using log4net;
 
 namespace MatrixMaster.Nodes
 {
@@ -22,7 +23,9 @@ namespace MatrixMaster.Nodes
     {
         public ObservableCollection<NodeInfo> Nodes { get; private set; }
         public static NodePool Instance;
-        Dictionary<int, NodeRMI> rmiResponses = new Dictionary<int, NodeRMI>(); 
+        Dictionary<int, NodeRMI> rmiResponses = new Dictionary<int, NodeRMI>();
+        private static readonly ILog log = LogManager.GetLogger(typeof(NodePool));
+        private static Random rnd = new Random();
 
         public NodePool(HostInterface hostInter)
         {
@@ -47,6 +50,8 @@ namespace MatrixMaster.Nodes
         public void DestroyNode(NodeInfo info)
         {
             Nodes.Remove(NodeForId(info.Id));
+            log.Debug("Removed node: "+info.Id);
+            log.Debug("New node total: "+Nodes.Count);
         }
 
         /// <summary>
@@ -98,9 +103,11 @@ namespace MatrixMaster.Nodes
         public NodeInfo LaunchNode<T>(HostInfo host)
         {
             var theHost = HostCache.FindHost(host.Id);
-            var newInfo = new NodeInfo() { HostID = theHost.Id, Id = new Random().Next(), RMITypeName = typeof(T).FullName, RMIResolvedType = typeof(T) };
+            var newInfo = new NodeInfo() { HostID = theHost.Id, Id = rnd.Next(), RMITypeName = typeof(T).FullName, RMIResolvedType = typeof(T) };
             theHost.Nodes.Add(newInfo);
             Nodes.Add(newInfo);
+            log.Debug("Node launched, ID: "+newInfo.Id+" RMI: "+newInfo.RMITypeName+" Host Node Count: "+theHost.Nodes.Count);
+            log.Debug("New node total: "+Nodes.Count);
             return newInfo;
         }
 

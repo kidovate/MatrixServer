@@ -45,6 +45,7 @@ namespace MMOController
 		/// <value>The world origin Z.</value>
 		public virtual int WorldOriginZ {get;set;}
 
+        /*
 		/// <summary>
 		/// Converts to or from a Vector3D with WorldOrigin
 		/// </summary>
@@ -59,6 +60,7 @@ namespace MMOController
 				this.WorldOriginZ = (int)value.ZPosition;
 			}
 		}
+        */
 
 		/// <summary>
 		/// The realm size in world coordinates (X).

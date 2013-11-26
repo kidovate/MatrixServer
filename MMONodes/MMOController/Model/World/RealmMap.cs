@@ -9,6 +9,7 @@ namespace MMOController
 		{
 			Id(e=>e.Id);
 			Map(e=>e.LevelName);
+		    Map(e => e.Name);
 			Map(e=>e.WorldOriginX);
 			Map(e=>e.WorldOriginY);
 			Map(e=>e.WorldOriginZ);

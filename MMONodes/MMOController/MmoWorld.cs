@@ -15,6 +15,10 @@ namespace MMOController
         static MmoWorld()
         {
             Realms = MmoDatabase.List<Realm>();
+            if(Realms.Count == 0)
+            {
+                MmoDatabase.Save(new Realm(){LevelName = "AkiTest1", Name="Aki Island", TileCountX = 1});
+            }
         }
     }
 }

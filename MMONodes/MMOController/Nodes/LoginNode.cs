@@ -33,6 +33,8 @@ namespace MMOController.Nodes
 
 			controller = portal.GetNodeProxy<IMMOCluster>();
 
+		    log.Debug("Realms count: "+MmoWorld.Realms.Count);
+
 			status = 1;
 			serverTask = Task.Factory.StartNew(ServerThread);
 		}

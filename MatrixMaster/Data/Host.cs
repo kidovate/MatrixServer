@@ -30,7 +30,7 @@ namespace MatrixMaster.Data
 		private HostStatus status;
 		private AES encryption;
 		private static readonly ILog log = LogManager.GetLogger (typeof(Host));
-		Timer heartbeat = new Timer (30000);
+		Timer heartbeat = new Timer (10000);
 		private HostInterface lastInter;
 		private ObservableCollection<NodeInfo> _nodes;
 

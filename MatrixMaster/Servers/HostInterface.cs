@@ -153,8 +153,9 @@ namespace MatrixMaster.Servers
         /// <param name="hostInfo"></param>
         public void DisconnectHost(HostInfo hostInfo)
         {
+            foreach (var node in HostCache.FindHost(hostInfo.Id).Nodes)
+                NodePool.Instance.DestroyNode(node);
             HostCache.ConnectedHosts.Remove(hostInfo.Id);
-            //todo: node cache, remove the associated Nodes
         }
 
         /// <summary>

@@ -74,11 +74,15 @@ namespace MatrixAPI.Data
         }
 
         /// <summary>
-        /// Serialize the return value to <see cref="Arguments"/>
+        /// Serialize the return value to <see cref="ReturnValue"/>
         /// </summary>
         /// <param name="returnValue"></param>
         public void SerializeReturnValue(object returnValue)
         {
+            if (returnValue == null) { 
+                ReturnValue = null;
+                return;
+            }
             BinaryFormatter formatter = new BinaryFormatter();
 			using (MemoryStream stream = new MemoryStream())
             {
@@ -118,6 +122,7 @@ namespace MatrixAPI.Data
         /// <returns></returns>
         public object DeserializeReturnValue()
         {
+            if (ReturnValue == null) return null;
             BinaryFormatter formatter = new BinaryFormatter();
 			using (MemoryStream stream = new MemoryStream())
             {

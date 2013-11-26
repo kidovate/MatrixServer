@@ -210,8 +210,13 @@ namespace MMOController
                 }
 				CharacterData[] characters = new CharacterData[thisUser.Characters.Count];
 				int i = 0;
-				foreach(var character in thisUser.Characters){
-						characters[i] = new CharacterData(){Id = character.Id, Name = character.Name, XP = character.XP, Gender=character.Gender, Realm = character.CurrentRealm.Name};
+				foreach(var character in thisUser.Characters)
+				{
+				    if (character.CurrentRealm == null) {
+                        character.CurrentRealm = MmoWorld.Realms.First();
+                        MmoDatabase.Save(character);
+				    }
+                    characters[i] = new CharacterData(){Id = character.Id, Name = character.Name, XP = character.XP, Gender=character.Gender, Realm = character.CurrentRealm.Name};
 						i++;
 				}
 				clientInter.SendTo(clientInfo, BuildMessage(MessageIdentifier.CharacterData, characters.Serialize()));
