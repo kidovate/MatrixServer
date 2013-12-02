@@ -50,6 +50,7 @@ namespace MMOController
 		/// <param name="username">Username.</param>
 		public void OnUserLoggedIn(string username){
 			if(!users.Contains(username.ToLower())) users.Add(username.ToLower());
+			log.Debug("("+users.Count+") User logged into cluster: "+username.ToLower());
 		}
 
 		/// <summary>
@@ -58,6 +59,7 @@ namespace MMOController
 		/// <param name="username">Username.</param>
 		public void OnUserLoggedOff(string username){
 			users.Remove(username.ToLower());
+			log.Debug("("+users.Count+") User logged out of cluster: "+username.ToLower());
 		}
 
 		#endregion

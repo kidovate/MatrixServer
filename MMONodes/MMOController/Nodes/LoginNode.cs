@@ -78,9 +78,9 @@ namespace MMOController.Nodes
 				}
 				else
 				{
-					//Find the host object.
-					var hostIdentity = ClientCache.FindClient(identity.Buffer);
-					if (hostIdentity == null)
+					//Find the client
+					var clientIdentity = ClientCache.FindClient(identity.Buffer);
+					if (clientIdentity == null)
 					{
 						log.Debug("Client contacted with invalid identity!");
 						lock (server)
@@ -90,7 +90,7 @@ namespace MMOController.Nodes
 						}
 					}else
 					{
-						Task.Factory.StartNew(()=>hostIdentity.ProcessMessage(data.Buffer));
+						Task.Factory.StartNew(()=>clientIdentity.ProcessMessage(data.Buffer));
 					}
 
 				}
