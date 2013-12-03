@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using MatrixAPI.Encryption;
 using MatrixHost.MasterInterface;
@@ -21,9 +22,12 @@ namespace MatrixHost
         private static NodeLibraryManager nodeLibraryManager;
         private static NodeManager manager;
         private static NodePool pool;
+        private static bool restart;
+        private static bool running;
 
         public static void Main(string[] args)
         {
+            running = true;
             log4net.Config.XmlConfigurator.Configure();
             log.Info("=== Matrix Host Server Launching ===");
 
@@ -53,7 +57,23 @@ namespace MatrixHost
             pool = new NodePool();
             client.Startup();
 
-            Console.ReadLine();
+            while(running)
+            {
+                Thread.Sleep(50);
+            }
+
+            client.Shutdown();
+            if(restart)
+            {
+                restart = false;
+                Main(args);
+            }
+        }
+
+        public static void ForceRestart()
+        {
+            running = false;
+            restart = true;
         }
     }
 }

@@ -101,6 +101,11 @@ namespace MatrixHost.MasterInterface
             socketThread.Start();
         }
 
+        public void Shutdown()
+        {
+            status = 0;
+        }
+
         private void ClientThread()
         {
             status = 1;
@@ -284,15 +289,25 @@ namespace MatrixHost.MasterInterface
                             ms.Write(data, 0, data.Length);
                             ms.Position = 0;
                             var nodeInfo = Serializer.Deserialize<NodeInfo>(ms);
-                            
+
                             if ((MessageIdentifier)msg.First.Buffer[0] == MessageIdentifier.NodeAdded)
                             {
                                 if (NodeDictionary.ContainsKey(nodeInfo.Id)) break;
+                                log.Debug("New node added to pool: " + nodeInfo.Id);
                                 nodeInfo.RMIResolvedType =
-                                    NodeManager.Instance.GetHandlerForRMITypeName(nodeInfo.RMITypeName).ComponentModel.Implementation;                            }
+                                    NodeManager.Instance.GetHandlerForRMITypeName(nodeInfo.RMITypeName).ComponentModel.Implementation;
+                            }
                             else
+                            {
+                                log.Debug("Node removed from pool: " + nodeInfo.Id);
                                 NodeDictionary.Remove(nodeInfo.Id);
+                            }
+                            log.Debug("Current node count: "+NodeDictionary.Count);
                         }
+                        break;
+                    case MessageIdentifier.InvalidIdentity:
+                        log.Error("Invalid identity response, restarting system...");
+                        Program.ForceRestart();
                         break;
                     default:
                         log.Error("Unknown message received...");

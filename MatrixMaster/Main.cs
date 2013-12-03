@@ -9,7 +9,7 @@ using log4net;
 
 namespace MatrixMaster
 {
-    class MainClass
+    public class MainClass
     {
         private static NodeManager manager;
         private static NodeLibraryManager nodeLibraryManager;
