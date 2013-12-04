@@ -111,7 +111,7 @@ namespace MMOController
             switch ((MessageIdentifier)message[0])
             {
 			case MessageIdentifier.Heartbeat:
-				//clientInter.SendTo(clientInfo, BuildMessage(MessageIdentifier.Heartbeat, null));
+				clientInter.SendTo(clientInfo, BuildMessage(MessageIdentifier.Heartbeat, null));
 				break;
 			case MessageIdentifier.SetIdentity:
 				if (status != ClientStatus.NoIdentity)
